@@ -145,7 +145,7 @@ class ScanPage extends StatelessWidget {
       body: Center(
         child: ElevatedButton(
           onPressed: () => _scanBarcode(context),
-          child: Text('Scan Barcode'),
+          child: const Text('Scan Barcode Disini'),
         ),
       ),
     );

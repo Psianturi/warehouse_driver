@@ -11,7 +11,7 @@ class BottomBarMenu extends StatefulWidget {
   const BottomBarMenu({Key? key}) : super(key: key);
 
   static List<Widget> screens = [
-    const HomePage(),
+    HomePage(),
     const HistoryPage(),
     const InformationPage(),
   ];

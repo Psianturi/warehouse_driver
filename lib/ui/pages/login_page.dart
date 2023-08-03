@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:jti_warehouse_driver/api/constant.dart';
 import 'package:jti_warehouse_driver/widgets/buttons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -149,7 +150,9 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 CustomFilledButton(
                   title: 'Sign In',
-                  onPressed: () {
+                  onPressed: () async {
+                    SharedPreferences pref = await SharedPreferences.getInstance();
+                    pref.setString("", "");
 
 
                     // login(emailController.text.toString(),

@@ -1,25 +1,32 @@
 import 'package:background_fetch/background_fetch.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:jti_warehouse_driver/main.dart';
 import 'package:latlong2/latlong.dart';
-
-
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
-
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  LatLng _driverLocation = LatLng(-6.1754, 106.8272); // Default location (example for Jakarta)
+  bool autoValidate = true;
+  bool readOnly = false;
+  bool showSegmentedControl = true;
+  final _formKey = GlobalKey<FormBuilderState>();
+
+  LatLng _driverLocation =
+      LatLng(-6.1754, 106.8272); // Default location (example for Jakarta)
   final Faker _faker = Faker();
-  FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
+  FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
@@ -36,14 +43,15 @@ class _HomePageState extends State<HomePage> {
   void initBackgroundFetch() {
     BackgroundFetch.configure(
       BackgroundFetchConfig(
-        minimumFetchInterval: 3, // interval dalam menit untuk pembaruan lokasi (atur sesuai kebutuhan Anda)
+        minimumFetchInterval: 11,
+        // interval dalam menit untuk pembaruan lokasi (atur sesuai kebutuhan Anda)
         stopOnTerminate: false,
         enableHeadless: true,
         forceAlarmManager: false,
         startOnBoot: true,
       ),
       onFetch,
-          (String taskId) async {
+      (String taskId) async {
         print("[BackgroundFetch] Event received: $taskId");
         BackgroundFetch.finish(taskId);
       },
@@ -54,23 +62,24 @@ class _HomePageState extends State<HomePage> {
   Future<void> onFetch(String taskId) async {
     print("[BackgroundFetch] Event received: $taskId");
     if (await Geolocator.isLocationServiceEnabled()) {
-      // Memperbarui lokasi driver saat di dalam aplikasi
+      // Memperbarui lokasi driver
       _updateDriverLocation();
-      _showSnackbar(); // Menampilkan snackbar saat di dalam aplikasi
+      _showSnackbar();
+      _showPopup();
+
+      print(
+          "PopUpnyaaaa berhasil ditampilkan $_showPopup()"); // Menampilkan snackbar saat di dalam aplikasi
     } else {
-      _showPopup(); // Menampilkan popup saat di luar aplikasi
-      _updateDriverLocation();
-      print("PopUp berhasil ditampilkan $_showPopup()");
+      print("Location service disabled");
     }
     //kondisi jika aplikasi berjalan di latar belakang(onStop)
-    if(BackgroundFetch.status == BackgroundFetch.stop()){
+    if (BackgroundFetch.status == BackgroundFetch.stop()) {
       _showPopup();
       print("Pop up berhasil ditampilkan $_showPopup()");
     }
-    // _showPopup();
-    // print("Pop up berhasil ditampilkan $_showPopup()");
 
-    BackgroundFetch.finish(taskId); // Memberitahu sistem bahwa tugas telah selesai
+    BackgroundFetch.finish(
+        taskId); // Memberitahu sistem bahwa tugas telah selesai
   }
 
   void _updateDriverLocation() async {
@@ -84,9 +93,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _showPopup() async {
-
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
+        AndroidNotificationDetails(
       'channel_id', // ID unik untuk channel notifikasi
       'jti_01', // Nama channel notifikasi
       // 'channel_description', // Deskripsi channel notifikasi
@@ -106,8 +114,8 @@ class _HomePageState extends State<HomePage> {
     // Menampilkan notifikasi dengan ID unik 0
     await flutterLocalNotificationsPlugin.show(
       0,
-      'Water Bill Due',
-      'Monthly Water Bill Due',
+      'JTI',
+      'Update Lokasi Driver',
       platformChannelSpecifics,
     );
 
@@ -141,38 +149,145 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Driver Location')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text(
-              'Lokasi Driver',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+      appBar: AppBar(title: Text('Transaction')),
+      body: FormBuilder(
+          key: _formKey,
+          onChanged: () {
+            _formKey.currentState?.save();
+            debugPrint(_formKey.currentState!.value.toString());
+          },
+          autovalidateMode: AutovalidateMode.disabled,
+          skipDisabled: true,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              children: <Widget>[
+                FormBuilderTextField(
+                  name: 'from',
+                  textInputAction: TextInputAction.next,
+                  //when enter is pressed, it will go to the next field
+                  decoration:
+                      const InputDecoration(labelText: 'Pengiriman Dari'),
+                  initialValue: 'Quary JTI',
+                  readOnly: true,
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                  ]),
+                ),
+                const SizedBox(height: 7),
+                FormBuilderTextField(
+                  name: 'to',
+                  textInputAction: TextInputAction.next,
+                  //when enter is pressed, it will go to the next field
+                  decoration:
+                      const InputDecoration(labelText: 'Tujuan Pengiriman'),
+                  initialValue: 'Warehouse Bojonegara',
+                  readOnly: true,
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                  ]),
+                ),
+                const SizedBox(height: 7),
+                FormBuilderDateTimePicker(
+                  name: 'date',
+                  initialEntryMode: DatePickerEntryMode.calendar,
+                  // initialValue: DateTime.now(),
+                  initialValue: DateTime(2023, 8, 4),
+                  enabled: false,
+                  inputType: InputType.both,
+                  decoration: const InputDecoration(
+                    labelText: 'Waktu Transaksi',
+                    // suffixIcon: IconButton(
+                    //   icon: const Icon(Icons.close),
+                    //   onPressed: () {
+                    //     _formKey.currentState!.fields['date']?.didChange(null);
+                    //   },
+                    // ),
+                  ),
+                  initialTime: const TimeOfDay(hour: 8, minute: 0),
+                  // locale: const Locale.fromSubtags(languageCode: 'fr'),
+                ),
+                const SizedBox(height: 7),
+                FormBuilderTextField(
+                  name: 'produk',
+                  textInputAction: TextInputAction.next,
+                  //when enter is pressed, it will go to the next field
+                  decoration:
+                  const InputDecoration(labelText: 'Nama Produk'),
+                  initialValue: 'Batu split 1/2',
+                  readOnly: true,
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                  ]),
+                ),
+
+                const SizedBox(height: 60),
+
+            Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Lokasi Driver',
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Latitude: ${_driverLocation.latitude}',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      'Longitude: ${_driverLocation.longitude}',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    SizedBox(height: 18),
+                    Text(
+                      'Last Updated: ${DateTime.now().toString()}',
+                      style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+                    ),
+                    SizedBox(height: 15),
+                  ],
+                ),
+              ),
+
+
+              ],
             ),
-            SizedBox(height: 10),
-            Text(
-              'Latitude: ${_driverLocation.latitude}',
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 5),
-            Text(
-              'Longitude: ${_driverLocation.longitude}',
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 18),
-            Text(
-              'Last Updated: ${DateTime.now().toString()}',
-              style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
-            ),
-            SizedBox(height: 15),
-          ],
-        ),
-      ),
+          )),
+
+
+      // child:
+      // Center(
+      //   child: Column(
+      //     mainAxisAlignment: MainAxisAlignment.end,
+      //     children: [
+      //       Text(
+      //         'Lokasi Driver',
+      //         style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+      //       ),
+      //       SizedBox(height: 10),
+      //       Text(
+      //         'Latitude: ${_driverLocation.latitude}',
+      //         style: TextStyle(fontSize: 16),
+      //       ),
+      //       SizedBox(height: 5),
+      //       Text(
+      //         'Longitude: ${_driverLocation.longitude}',
+      //         style: TextStyle(fontSize: 16),
+      //       ),
+      //       SizedBox(height: 18),
+      //       Text(
+      //         'Last Updated: ${DateTime.now().toString()}',
+      //         style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+      //       ),
+      //       SizedBox(height: 15),
+      //     ],
+      //   ),
+      // ),
     );
   }
 }

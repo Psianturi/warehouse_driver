@@ -43,6 +43,8 @@ dependencies:
   barcode_scan2: ^4.2.4
   flutter_local_notifications: ^15.1.0+1
   shared_preferences: ^2.2.0
+  flutter_form_builder: ^9.1.0
+  form_builder_validators: ^9.0.0
 
   #location library
   geolocator: ^9.0.2

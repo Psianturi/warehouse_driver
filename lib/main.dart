@@ -29,7 +29,7 @@ Future<void> main() async {
 
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =

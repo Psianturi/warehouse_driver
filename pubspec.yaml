@@ -77,3 +77,6 @@ flutter:
 
   assets:
     - assets/images/
+
+    - assets/fonts/Poppins-MediumItalic.ttf
+    - assets/fonts/Poppins-Regular.ttf

@@ -5,7 +5,10 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart';
+import 'package:jti_warehouse_driver/api/constant.dart';
 import 'package:jti_warehouse_driver/main.dart';
+import 'package:jti_warehouse_driver/ui/pages/models/LocationData.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
@@ -22,8 +25,12 @@ class _HomePageState extends State<HomePage> {
   bool showSegmentedControl = true;
   final _formKey = GlobalKey<FormBuilderState>();
 
-  LatLng _driverLocation =
-      LatLng(-6.1754, 106.8272); // Default location (example for Jakarta)
+  LocationData _driverLocation = LocationData(
+    latitude: -6.1754,
+    longitude: 106.8272,
+    elevation: 0.0,
+    speed: 0.0,
+  );
   final Faker _faker = Faker();
   FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
@@ -37,7 +44,17 @@ class _HomePageState extends State<HomePage> {
 
     // Memperbarui lokasi sekali saat aplikasi dijalankan
     _updateDriverLocation();
+
   }
+
+  // @override
+  // void dispose() {
+  //   // Hentikan background service saat widget dihapus
+  //   if (FlutterBackgroundService().isServiceRunning) {
+  //     FlutterBackgroundService().stop();
+  //   }
+  //   super.dispose();
+  // }
 
   // Inisialisasi background_fetch dengan mengatur fungsi yang akan dipanggil di latar belakang
   void initBackgroundFetch() {
@@ -86,10 +103,43 @@ class _HomePageState extends State<HomePage> {
     // Untuk menghasilkan lokasi driver yang acak
     double latitude = double.parse(_faker.geo.latitude().toString());
     double longitude = double.parse(_faker.geo.longitude().toString());
+    double elevasi = double.parse(_faker.randomGenerator.decimal().toStringAsFixed(2));
+    double kecepatan = double.parse(_faker.randomGenerator.decimal(min: 0, scale: 100).toStringAsFixed(2));
+
 
     setState(() {
-      _driverLocation = LatLng(latitude, longitude);
+      _driverLocation = LocationData(
+        latitude: latitude,
+        longitude: longitude,
+        elevation: elevasi,
+        speed: kecepatan,
+      );
     });
+    // Panggil fungsi untuk mengirim pembaruan lokasi ke endpoint API
+    await _sendLocationUpdateToAPI(latitude, longitude, elevasi, kecepatan);
+
+  }
+  Future<void> _sendLocationUpdateToAPI(
+      double latitude,
+      double longitude,
+      double elevasi,
+      double kecepatan,
+      ) async {
+    // String apiUrl = '{{url}}/driver/update_location_driver/1';
+    final requestBody =
+        '{"latitude": "$latitude", "longitude": "$longitude", "elevasi": "$elevasi", "kecepatan": "$kecepatan"}';
+
+    try {
+      final response = await put(Uri.parse(ApiConstants.baseUrl + ApiConstants.updateLocation ),
+          body: requestBody);
+      if (response.statusCode == 200) {
+        print('Location updated successfully');
+      } else {
+        print('Failed to update location');
+      }
+    } catch (e) {
+      print('Error updating location: $e');
+    }
   }
 
   Future<void> _showPopup() async {
@@ -262,11 +312,27 @@ class _HomePageState extends State<HomePage> {
                         'Longitude: ${_driverLocation.longitude}',
                         style: TextStyle(fontSize: 14),
                       ),
-                      SizedBox(height: 14),
+                      SizedBox(height: 5),
+                      Text(
+                        'Elevasi: ${_driverLocation.elevation}',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        'Kecepatan: ${_driverLocation.speed}',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      const SizedBox(height: 14),
                       Text(
                         'Last Updated: ${DateTime.now().toString()}',
                         textAlign: TextAlign.left,
                         style: const TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          _updateDriverLocation();
+                        },
+                        child: const Text('UpdateLocation API'),
                       ),
                     ],
                   ),

@@ -17,55 +17,55 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-  var emailController = TextEditingController(text: "kminchelle");
-  TextEditingController passwordController = TextEditingController(text: "0lelplR");
+  var emailController = TextEditingController(text: "admin@gmail.com");
+  TextEditingController passwordController = TextEditingController(text: "12345");
 
   late final String title;
 
-  // Future <void> login(
-  //     String email,
-  //     password,
-  //     // token
-  //     ) async {
-  //   try {
-  //     final myBody = json.encode({
-  //       'username': email,
-  //       'password': password,
-  //     });
-  //
-  //     Response response = await post(
-  //         Uri.parse(ApiConstants.baseUrl + ApiConstants.loginEndPoint ),
-  //         headers: {HttpHeaders.contentTypeHeader: 'application/json', },
-  //         // 'Authorization': 'Bearer $token'
-  //         body: myBody);
-  //
-  //     try {
-  //       if (kDebugMode) {
-  //         print(jsonDecode(response.body.toString()));
-  //       }
-  //
-  //       if (response.statusCode == 200) {
-  //         print('Response Login: ${response.statusCode}');
-  //         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-  //           content: Text("Login Success"),
-  //           backgroundColor: Colors.lightBlueAccent,
-  //           duration: Duration(seconds: 1),
-  //         ));
-  //
-  //         if (response.statusCode == 200) {
-  //           Navigator.pushNamed(context, '/bottom-menu');
-  //         } else {
-  //           print('failed');
-  //         }
-  //
-  //       }
-  //     } catch (e) {
-  //       print(e.toString());
-  //     }
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  // }
+  Future <void> login(
+      String email,
+      password,
+      // token
+      ) async {
+    try {
+      final myBody = json.encode({
+        'email': email,
+        'password': password,
+      });
+
+      Response response = await post(
+          Uri.parse(ApiConstants.baseUrl + ApiConstants.loginEndPoint ),
+          headers: {HttpHeaders.contentTypeHeader: 'application/json', },
+          // 'Authorization': 'Bearer $token'
+          body: myBody);
+
+      try {
+        if (kDebugMode) {
+          print(jsonDecode(response.body.toString()));
+        }
+
+        if (response.statusCode == 200) {
+          print('Response Login: ${response.statusCode}');
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Login Success"),
+            backgroundColor: Colors.lightBlueAccent,
+            duration: Duration(seconds: 1),
+          ));
+
+          if (response.statusCode == 200) {
+            Navigator.pushNamed(context, '/bottom-menu');
+          } else {
+            print('failed');
+          }
+
+        }
+      } catch (e) {
+        print(e.toString());
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 
 
 
@@ -155,8 +155,8 @@ class _LoginPageState extends State<LoginPage> {
                     pref.setString("", "");
 
 
-                    // login(emailController.text.toString(),
-                    //     passwordController.text.toString() );
+                    login(emailController.text.toString(),
+                        passwordController.text.toString() );
 
                     if (emailController.text.isEmpty ||
                         passwordController.text.isEmpty) {
@@ -167,7 +167,8 @@ class _LoginPageState extends State<LoginPage> {
 
                     // Navigator.push(context,
                         // MaterialPageRoute(builder:(context) => const HomePage() ) );
-                    Navigator.pushNamed(context, '/barcode-scan');
+                    // Navigator.pushNamed(context, '/barcode-scan');
+
                   },
                 ),
               ],

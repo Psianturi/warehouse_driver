@@ -51,6 +51,7 @@ class MyApp extends StatelessWidget {
         ),
         theme: ThemeData(
           scaffoldBackgroundColor: Colors.white,
+          fontFamily: 'Poppins-Regular',
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.white,
             elevation: 0,

@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
   void initBackgroundFetch() {
     BackgroundFetch.configure(
       BackgroundFetchConfig(
-        minimumFetchInterval: 11,
+        minimumFetchInterval: 12,
         // interval dalam menit untuk pembaruan lokasi (atur sesuai kebutuhan Anda)
         stopOnTerminate: false,
         enableHeadless: true,
@@ -152,7 +152,20 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Transaction')),
+      appBar: AppBar(title: Text('Transaction'),
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+        backgroundColor: Colors.orangeAccent,
+        automaticallyImplyLeading: false,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(25),
+          ),
+        ),
+      ),
       body: FormBuilder(
           key: _formKey,
           onChanged: () {
@@ -165,6 +178,7 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(14),
             child: Column(
               children: <Widget>[
+                const SizedBox(height: 7),
                 FormBuilderTextField(
                   name: 'from',
                   textInputAction: TextInputAction.next,
@@ -224,33 +238,70 @@ class _HomePageState extends State<HomePage> {
                   ]),
                 ),
 
-                const SizedBox(height: 60),
+                const SizedBox(height: 75),
 
             Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      'Lokasi Driver',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Latitude: ${_driverLocation.latitude}',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      'Longitude: ${_driverLocation.longitude}',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    SizedBox(height: 18),
-                    Text(
-                      'Last Updated: ${DateTime.now().toString()}',
-                      style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
-                    ),
-                    SizedBox(height: 15),
-                  ],
+                child: AlertDialog(
+                  insetPadding:  EdgeInsets.zero,
+                  shadowColor: Colors.greenAccent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(28),
+                  ),
+                  title: const Text('Lokasi Driver',
+                    style: TextStyle(fontSize: 16), textAlign: TextAlign.center,
+                  ),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Latitude: ${_driverLocation.latitude}',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        'Longitude: ${_driverLocation.longitude}',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      SizedBox(height: 14),
+                      Text(
+                        'Last Updated: ${DateTime.now().toString()}',
+                        textAlign: TextAlign.left,
+                        style: const TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+                      ),
+                    ],
+                  ),
+
+                  // child:
+                  // Column(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  //   mainAxisSize: MainAxisSize.max,
+                  //   children: [
+                  //     const SizedBox(height: 12),
+                  //     Text(
+                  //       'Lokasi Driver',
+                  //       style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  //     ),
+                  //     SizedBox(height: 10),
+                  //     Text(
+                  //       'Latitude: ${_driverLocation.latitude}',
+                  //       style: TextStyle(fontSize: 16),
+                  //     ),
+                  //     SizedBox(height: 5),
+                  //     Text(
+                  //       'Longitude: ${_driverLocation.longitude}',
+                  //       style: TextStyle(fontSize: 16),
+                  //     ),
+                  //     SizedBox(height: 18),
+                  //     Text(
+                  //       'Last Updated: ${DateTime.now().toString()}',
+                  //       textAlign: TextAlign.left,
+                  //       textDirection: TextDirection.ltr,
+                  //       style: const TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+                  //     ),
+                  //     const SizedBox(height: 12),
+                  //   ],
+                  // ),
+
                 ),
               ),
 

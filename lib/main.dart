@@ -7,6 +7,7 @@ import 'package:jti_warehouse_driver/ui/pages/home_page.dart';
 import 'package:jti_warehouse_driver/ui/pages/login_page.dart';
 import 'package:jti_warehouse_driver/ui/pages/scan_page/barcode_scanner.dart';
 import 'package:jti_warehouse_driver/ui/pages/signup_page.dart';
+import 'package:jti_warehouse_driver/ui/pages/transaction/transaction_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // void main() {
@@ -72,7 +73,8 @@ class MyApp extends StatelessWidget {
           '/sign-up': (context) => const SignUpPage(),
           '/home': (context) => const HomePage(),
           '/bottom-menu': (context) => const BottomBarMenu(),
-          '/barcode-scan': (context) => const ScanPage(),
+          '/barcode-scan': (context) =>  const ScanPage(),
+          '/transaction': (context) => const TransactionPage(),
         });
   }
 }

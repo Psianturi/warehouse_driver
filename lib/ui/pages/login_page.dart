@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:jti_warehouse_driver/api/constant.dart';
 import 'package:jti_warehouse_driver/widgets/buttons.dart';
+import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -27,7 +28,9 @@ class _LoginPageState extends State<LoginPage> {
       password,
       // token
       ) async {
+
     try {
+
       final myBody = json.encode({
         'email': email,
         'password': password,
@@ -35,8 +38,8 @@ class _LoginPageState extends State<LoginPage> {
 
       Response response = await post(
           Uri.parse(ApiConstants.baseUrl + ApiConstants.loginEndPoint ),
-          headers: {HttpHeaders.contentTypeHeader: 'application/json', },
-          // 'Authorization': 'Bearer $token'
+          headers: {HttpHeaders.contentTypeHeader: 'application/json',
+          },
           body: myBody);
 
       try {
@@ -68,42 +71,41 @@ class _LoginPageState extends State<LoginPage> {
   }
 
 
-
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
       body: ListView(
         padding: const EdgeInsets.symmetric(
-          horizontal: 24,
+          horizontal: 40,
         ),
         children: [
           Container(
-            width: 155,
-            height: 50,
+            height: 190,
             margin: const EdgeInsets.only(
-              top: 100,
-              bottom: 100,
+              top: 40,
+              bottom: 15,
             ),
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(
-                  'assets/images/logoJTI.png',
-                ),
-              ),
+
+            child: Image.asset(
+              'assets/images/logoJTI.png',
+              fit: BoxFit.fitWidth,
             ),
           ),
+
           const Text(
-            'Driver App \nWarehouse',
+            'Driver App Warehouse',
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w500,
               color: Color(0xff1D1E3C),
+
             ),
           ),
-          const SizedBox(
-            height: 30,
-          ),
+          SizedBox(height: 120,
+              child: Lottie.asset("assets/anims/truck_driver.json")),
+
           Container(
             padding: const EdgeInsets.all(22),
             decoration: BoxDecoration(
@@ -156,14 +158,15 @@ class _LoginPageState extends State<LoginPage> {
 
 
                     login(emailController.text.toString(),
-                        passwordController.text.toString() );
+                        passwordController.text.toString()
+                    );
 
-                    if (emailController.text.isEmpty ||
-                        passwordController.text.isEmpty) {
-                      print('email or password is empty');
-                    } else {
-                      print('email or password is not empty');
-                    }
+                    // if (emailController.text.isEmpty ||
+                    //     passwordController.text.isEmpty) {
+                    //   print('email or password is empty');
+                    // } else {
+                    //   print('email or password is not empty');
+                    // }
 
                     // Navigator.push(context,
                         // MaterialPageRoute(builder:(context) => const HomePage() ) );
@@ -175,13 +178,16 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           const SizedBox(
-            height: 40,
+            height: 20,
           ),
           CustomTextButton(
             title: 'Create New Account',
             onPressed: () {
               Navigator.pushNamed(context, '/sign-up');
             },
+          ),
+          SizedBox(
+            height: 20,
           ),
         ],
       ),

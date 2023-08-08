@@ -1,23 +1,23 @@
 
 class LocationData {
-  double latitude;
-  double longitude;
-  double elevation;
-  double speed;
+  double lat;
+  double long;
+  double elevasi;
+  double kecepatan;
 
   LocationData({
-    required this.latitude,
-    required this.longitude,
-    required this.elevation,
-    required this.speed,
+    required this.lat,
+    required this.long,
+    required this.elevasi,
+    required this.kecepatan,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'latitude': latitude,
-      'longitude': longitude,
-      'elevation': elevation,
-      'speed': speed,
+      'lat': lat,
+      'longitude': long,
+      'elevasi': elevasi,
+      'kecepatan': kecepatan,
     };
   }
 }

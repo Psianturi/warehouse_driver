@@ -48,7 +48,8 @@ class _LoginPageState extends State<LoginPage> {
         }
 
         if (response.statusCode == 200) {
-          print('Response Login: ${response.statusCode}');
+          print('ResponseStatus Login: ${response.statusCode}');
+          print('ResponseBody Login: ${response.body}');
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Login Success"),
             backgroundColor: Colors.lightBlueAccent,

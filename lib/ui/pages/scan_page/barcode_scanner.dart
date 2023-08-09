@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:jti_warehouse_driver/api/constant.dart';
+import 'package:jti_warehouse_driver/ui/pages/models/scan_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -20,6 +21,7 @@ class ScanPage extends StatefulWidget {
 }
 
 class _ScanPageState extends State<ScanPage> {
+  ScanModel? scanModel;
 
   Future<void> _scanBarcode(BuildContext context) async {
     try {
@@ -77,53 +79,87 @@ class _ScanPageState extends State<ScanPage> {
     );
   }
 
-
-  Future<void> sendScanDataToApi(
-      String tr_number, int user_id, bool isFinished, double lat, double long, token) async {
-
+  Future<void> scanDataToApi(accessToken) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    prefs.setString('token', token);
+    prefs.setString('token', HttpHeaders.proxyAuthorizationHeader);
     _scanBarcode(context);
 
-    try {
-    // Menyimpan token menggunakan shared_preferences
-    //   prefs.setString('token', token);
-    final requestData = json.encode({
-      "tr_number": "SHIP-2023728-00023",
-      "user_id": user_id,
-      "is_finished": isFinished,
-      "lat": lat,
-      "long": long,
-    });
+    var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.scanAssignDriver);
+    var headers = { 'Content-Type': 'application/json',
+      'Authorization':
+    'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX3V1aWQiOiJkOGIzOTExMC1mZjI0LTRmNzEtYjUyMi0xYTY3MGJiMjQ3NzUiLCJhdXRob3JpemVkIjp0cnVlLCJleHAiOjk0NTc4Mzc0NzIsInVzZXJfaWQiOjF9.mIStyQpIUoHk4BvuwsWwND0VMdkoMWwThUd5bE3pZtQ' };
+    var response = await http.post(url, headers: headers);
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+    print('Response jsonResponse: ${ScanModel.fromJson(jsonDecode(response.body))}');
 
-    final http.Response response = await http.post(
-      Uri.parse(ApiConstants.baseUrl + ApiConstants.scanAssignDriver),
-      headers: {
-        HttpHeaders.contentTypeHeader: 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: requestData,
-    );
-
-    try {
-      if (kDebugMode) {
-        print(jsonDecode(response.body.toString()));
-      }
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Data Success"),
+        backgroundColor: Colors.lightBlueAccent,
+        duration: Duration(seconds: 2),
+      ));
 
       if (response.statusCode == 200) {
-        print("Data berhasil dikirim ke API dengan status code: ${response.statusCode}");
+        final jsonResponse = json.decode(response.body);
+        scanModel = ScanModel.fromJson(jsonResponse);
+        Navigator.pushNamed(context, '/bottom-menu');
       } else {
-        print("Gagal mengirim data ke API. Status code: ${response.statusCode}");
+        print('Gagal mengirim data ke API.');
+        Navigator.pushNamed(context, '/home');
       }
-    } catch (e) {
-      print(e.toString());
-    }
-    } catch (e) {
-      print(e.toString());
+
     }
   }
 
+
+  // Future<void> sendScanDataToApi(
+  //     String trNumber, int userId, bool isFinished, double lat, double long, token) async {
+  //
+  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  //
+  //   prefs.setString('token', token);
+  //   _scanBarcode(context);
+  //
+  //   try {
+  //   // Menyimpan token menggunakan shared_preferences
+  //     prefs.setString('token', token);
+  //   final requestData = json.encode({
+  //     "tr_number": "SHIP-2023728-00023",
+  //     "user_id": userId,
+  //     "is_finished": isFinished,
+  //     "lat": lat,
+  //     "long": long,
+  //   });
+  //
+  //   final http.Response response = await http.post(
+  //     Uri.parse(ApiConstants.baseUrl + ApiConstants.scanAssignDriver),
+  //     headers: {
+  //       HttpHeaders.contentTypeHeader: 'application/json',
+  //       'Authorization':
+  //       'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX3V1aWQiOiJkOGIzOTExMC1mZjI0LTRmNzEtYjUyMi0xYTY3MGJiMjQ3NzUiLCJhdXRob3JpemVkIjp0cnVlLCJleHAiOjk0NTc4Mzc0NzIsInVzZXJfaWQiOjF9.mIStyQpIUoHk4BvuwsWwND0VMdkoMWwThUd5bE3pZtQ',
+  //     },
+  //     body: requestData,
+  //   );
+  //
+  //   try {
+  //     if (kDebugMode) {
+  //       print(jsonDecode(response.body.toString()));
+  //     }
+  //
+  //     if (response.statusCode == 200) {
+  //       print("Data berhasil dikirim ke API dengan status code: ${response.statusCode}");
+  //     } else {
+  //       print("Gagal mengirim data ke API. Status code: ${response.statusCode}");
+  //       print('ResponseGagal body: ${response.body}');
+  //     }
+  //   } catch (e) {
+  //     print(e.toString());
+  //   }
+  //   } catch (e) {
+  //     print(e.toString());
+  //   }
+  // }
 
 
 
@@ -146,8 +182,8 @@ class _ScanPageState extends State<ScanPage> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed:  () {
-                sendScanDataToApi("tr_number" , 1, false, -6.2576241, 106.8380971, "token");
-                Navigator.pushNamed(context, '/bottom-menu');
+                scanDataToApi('token');
+                // sendScanDataToApi('tr_number', 1, true, 0.0, 0.0, 'token');
               },
               child: Text("Scan Barcode"),
             ),

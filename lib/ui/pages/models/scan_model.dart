@@ -8,15 +8,16 @@ class ScanModel {
 
   ScanModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    trNumber = json['tr_number'];
+    // trNumber = json['tr_number'];
+    trNumber = 'SHIP-2023731-00148';
     status = json['status'];
-    user = json['user'] != null ? new User.fromJson(json['user']) : null;
+    user = json['user'] != null ? User.fromJson(json['user']) : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['tr_number'] = this.trNumber;
+    data['tr_number'] = trNumber;
     data['status'] = this.status;
     if (this.user != null) {
       data['user'] = this.user!.toJson();

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:background_fetch/background_fetch.dart';
 import 'package:faker/faker.dart';
@@ -32,7 +33,7 @@ class _HomePageState extends State<HomePage> {
     kecepatan: 0.0,
   );
 
-  // final Faker _faker = Faker();
+  final Faker _faker = Faker();
   final FlutterLocalNotificationsPlugin _localNotifications =
   FlutterLocalNotificationsPlugin();
 
@@ -52,7 +53,7 @@ class _HomePageState extends State<HomePage> {
   void initBackgroundFetch() {
     BackgroundFetch.configure(
       BackgroundFetchConfig(
-        minimumFetchInterval: 12,
+        minimumFetchInterval: 14,
         // interval dalam menit untuk pembaruan lokasi (atur sesuai kebutuhan Anda)
         stopOnTerminate: false,
         enableHeadless: true,
@@ -69,18 +70,18 @@ class _HomePageState extends State<HomePage> {
 
   Future <void> _updateDriverLocation() async {
     // Untuk menghasilkan lokasi driver yang acak
-    // double lat = double.parse(_faker.geo.latitude().toString());
-    // double long = double.parse(_faker.geo.longitude().toString());
-    // double elevasi = double.parse(_faker.randomGenerator.decimal().toStringAsFixed(2));
-    // double kecepatan = double.parse(_faker.randomGenerator.decimal(min: 0, scale: 100).toStringAsFixed(2));
+    double lat = double.parse(_faker.geo.latitude().toString());
+    double long = double.parse(_faker.geo.longitude().toString());
+    double elevasi = double.parse(_faker.randomGenerator.decimal().toStringAsFixed(2));
+    double kecepatan = double.parse(_faker.randomGenerator.decimal(min: 0, scale: 100).toStringAsFixed(2));
 
     // Untuk menghasilkan lokasi driver yang sebenarnya
     // Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
 
-    double lat = _driverLocation.lat;
-    double long = _driverLocation.long;
-    double elevasi = _driverLocation.elevasi;
-    double kecepatan = _driverLocation.kecepatan;
+    // double lat = _driverLocation.lat;
+    // double long = _driverLocation.long;
+    // double elevasi = _driverLocation.elevasi;
+    // double kecepatan = _driverLocation.kecepatan;
 
 
     setState(() {
@@ -92,7 +93,7 @@ class _HomePageState extends State<HomePage> {
       );
     });
     // Panggil fungsi untuk mengirim pembaruan lokasi ke endpoint API
-    await _sendLocationUpdateToAPI(lat, long, elevasi, kecepatan);
+    await _sendLocationUpdateToAPI(lat, long, elevasi, kecepatan, 1);
   }
 
   // Fungsi yang akan dijalankan oleh background_fetch
@@ -123,7 +124,9 @@ class _HomePageState extends State<HomePage> {
   Future<void> _sendLocationUpdateToAPI(double lat,
       double long,
       double elevasi,
-      double kecepatan,) async {
+      double kecepatan,
+      int id,
+      ) async {
     // String apiUrl = '{{url}}/driver/update_location_driver/1';
     final requestBody = json.encode(
         {
@@ -135,13 +138,21 @@ class _HomePageState extends State<HomePage> {
 
     try {
       final response = await put(
-          Uri.parse(ApiConstants.baseUrl + ApiConstants.updateLocation),
+          Uri.parse(ApiConstants.baseUrl + ApiConstants.updateLocation + id.toString()),
+          headers: {
+            HttpHeaders.contentTypeHeader: 'application/json',
+            'Authorization':
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX3V1aWQiOiJkOGIzOTExMC1mZjI0LTRmNzEtYjUyMi0xYTY3MGJiMjQ3NzUiLCJhdXRob3JpemVkIjp0cnVlLCJleHAiOjk0NTc4Mzc0NzIsInVzZXJfaWQiOjF9.mIStyQpIUoHk4BvuwsWwND0VMdkoMWwThUd5bE3pZtQ',
+          },
           body: requestBody);
       if (response.statusCode == 200) {
         print('Location updated successfully');
         print('Response UpdateLokasi: ${response.statusCode}');
+        print('Succsesssss to update location: ${response.body}');
       } else {
-        print('Failed to update location');
+        print('Failed to update location: ${response.body}');
+        print('Response UpdateLokasi: ${response.statusCode}');
+
       }
     } catch (e) {
       print('Error updating location: $e');

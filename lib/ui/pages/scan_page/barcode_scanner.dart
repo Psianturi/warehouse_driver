@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:jti_warehouse_driver/api/constant.dart';
+import 'package:jti_warehouse_driver/api/key.dart';
 import 'package:jti_warehouse_driver/ui/pages/models/scan_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -87,7 +88,7 @@ class _ScanPageState extends State<ScanPage> {
     var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.scanAssignDriver);
     var headers = { 'Content-Type': 'application/json',
       'Authorization':
-    'Bearer ' };
+    'Bearer $bearerToken' };
     var response = await http.post(url, headers: headers);
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');

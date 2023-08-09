@@ -15,6 +15,8 @@ import 'package:jti_warehouse_driver/ui/pages/models/LocationData.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
+import '../../api/key.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -142,7 +144,7 @@ class _HomePageState extends State<HomePage> {
           headers: {
             HttpHeaders.contentTypeHeader: 'application/json',
             'Authorization':
-            'Bearer ',
+            'Bearer $bearerToken',
           },
           body: requestBody);
       if (response.statusCode == 200) {

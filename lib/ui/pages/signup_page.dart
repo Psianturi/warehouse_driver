@@ -32,7 +32,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return true;
   }
 
-  void register(
+  void signUpDriver(
       String fullname,
       email,
       phonenumber,
@@ -161,7 +161,7 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
           CustomFilledButton(
             onPressed: () {
-              register(
+              signUpDriver(
                 nameController.text.toString(),
                 emailController.text.toString(),
                 phoneController.text.toString(),

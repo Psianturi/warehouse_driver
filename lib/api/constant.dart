@@ -13,9 +13,9 @@ class ApiConstants {
   // static String imageUrl = 'http://192.168.22.23:6565/api/v1/public/data_upload/product/';
   static String loginEndPoint = '/auth/login';
   static String getInfo = '/transaction/report/invoiced/quarry_id/1/06-21-2023/06-21-2023';
-
+  static String registerEndPoint = '/auth/register_driver';
 
   static String logoutEndPoint = '/auth/logout';
-  static String registerEndPoint = '/auth/register';
+
 
 }

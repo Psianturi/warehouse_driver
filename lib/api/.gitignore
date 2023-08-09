@@ -1,2 +1,6 @@
 
-key.dart
+#key.dart
+
+# ignore key.dart
+jti_warehouse_driver\lib\api\key.dart
+```

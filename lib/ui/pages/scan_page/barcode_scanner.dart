@@ -87,7 +87,7 @@ class _ScanPageState extends State<ScanPage> {
     var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.scanAssignDriver);
     var headers = { 'Content-Type': 'application/json',
       'Authorization':
-    'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX3V1aWQiOiJkOGIzOTExMC1mZjI0LTRmNzEtYjUyMi0xYTY3MGJiMjQ3NzUiLCJhdXRob3JpemVkIjp0cnVlLCJleHAiOjk0NTc4Mzc0NzIsInVzZXJfaWQiOjF9.mIStyQpIUoHk4BvuwsWwND0VMdkoMWwThUd5bE3pZtQ' };
+    'Bearer ' };
     var response = await http.post(url, headers: headers);
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');

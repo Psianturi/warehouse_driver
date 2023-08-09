@@ -142,7 +142,7 @@ class _HomePageState extends State<HomePage> {
           headers: {
             HttpHeaders.contentTypeHeader: 'application/json',
             'Authorization':
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX3V1aWQiOiJkOGIzOTExMC1mZjI0LTRmNzEtYjUyMi0xYTY3MGJiMjQ3NzUiLCJhdXRob3JpemVkIjp0cnVlLCJleHAiOjk0NTc4Mzc0NzIsInVzZXJfaWQiOjF9.mIStyQpIUoHk4BvuwsWwND0VMdkoMWwThUd5bE3pZtQ',
+            'Bearer ',
           },
           body: requestBody);
       if (response.statusCode == 200) {

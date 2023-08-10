@@ -98,15 +98,13 @@ class _InformationPageState extends State<InformationPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
           Container(
-          width: 120,
-          height: 120,
+          width: 140,
+          height: 150,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             image: DecorationImage(
               image: userData["photo"] == null
-                  ? const AssetImage(
-                'assets/images/img_profile.png',
-              )
+                  ? NetworkImage(userData["photo"])
                   : const NetworkImage(
                   "https://ouch-cdn2.icons8.com/84zU-uvFboh65geJMR5XIHCaNkx-BZ2TahEpE9TpVJM/rs:fit:784:784/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9wbmcvODU5/L2E1MDk1MmUyLTg1/ZTMtNGU3OC1hYzlh/LWU2NDVmMWRiMjY0/OS5wbmc.png")
               as ImageProvider,
@@ -117,11 +115,16 @@ class _InformationPageState extends State<InformationPage> {
             const SizedBox( height: 30,),
 
             Text('Name: ${userData["name"]}'),
+            SizedBox( height: 10),
             Text('Email: ${userData["email"]}'),
+            SizedBox( height: 10),
             Text('Phone: ${userData["phone"]}'),
+            SizedBox( height: 10),
             Text('Role Id: ${userData["role_id"]}'),
+            SizedBox( height: 10),
 
             Text('Kendaraan: ${userData2["type"]}'),
+            SizedBox( height: 10),
             Text('Posisi: ${userData2["driver"]}'),
 
           ],

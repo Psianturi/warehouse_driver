@@ -14,6 +14,7 @@ import 'package:jti_warehouse_driver/main.dart';
 import 'package:jti_warehouse_driver/ui/pages/models/LocationData.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../api/key.dart';
 
@@ -77,13 +78,23 @@ class _HomePageState extends State<HomePage> {
     double elevasi = double.parse(_faker.randomGenerator.decimal().toStringAsFixed(2));
     double kecepatan = double.parse(_faker.randomGenerator.decimal(min: 0, scale: 100).toStringAsFixed(2));
 
-    // Untuk menghasilkan lokasi driver yang sebenarnya
-    // Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-
     // double lat = _driverLocation.lat;
     // double long = _driverLocation.long;
     // double elevasi = _driverLocation.elevasi;
     // double kecepatan = _driverLocation.kecepatan;
+
+    // Untuk menghasilkan lokasi driver yang sebenarnya
+    // Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    // double lat;
+    // double long;
+    // double elevasi;
+    // double kecepatan;
+    //
+    // lat = position.latitude;
+    // long = position.longitude;
+    // elevasi = position.altitude;
+    // kecepatan = position.speed;
+
 
 
     setState(() {
@@ -198,6 +209,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  _handleLogout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('user');
+    Navigator.pushNamedAndRemoveUntil(
+        context, '/sign-in', ModalRoute.withName('/sign-in'));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -209,6 +227,18 @@ class _HomePageState extends State<HomePage> {
         ),
         backgroundColor: Colors.orangeAccent,
         automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            onPressed: () {
+              _handleLogout();
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text("Log Out Berhasil"),
+                backgroundColor: Colors.greenAccent,
+                duration: Duration(seconds: 2),
+              ));
+            },
+            icon: const Icon(Icons.logout),
+          ),],
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             bottom: Radius.circular(25),

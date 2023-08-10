@@ -1,6 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:jti_warehouse_driver/api/constant.dart';
+import 'package:jti_warehouse_driver/api/key.dart';
 import 'package:jti_warehouse_driver/ui/pages/home_page.dart';
+import 'package:jti_warehouse_driver/ui/pages/models/scan_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class InformationPage extends StatefulWidget {
   const InformationPage({super.key});
@@ -10,6 +16,10 @@ class InformationPage extends StatefulWidget {
 }
 
 class _InformationPageState extends State<InformationPage> {
+  Map<String, dynamic> userData = {};
+  Map<String, dynamic> userData2 = {};
+
+  // User? userData;
 
   _logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -17,6 +27,36 @@ class _InformationPageState extends State<InformationPage> {
     Navigator.pushNamedAndRemoveUntil(
         context, '/sign-in', ModalRoute.withName('/sign-in'));
   }
+
+  Future<void> fetchDataUser(int id) async {
+    var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.getLocation + id.toString() );
+    final response = await http.get(url,
+        headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $bearerToken'
+    });
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final userDataMap = data["data"][0]["id_track_driver"]["user"];
+      final userDataTransport = data["data"][0]["id_track_driver"]["transport"];
+      print("Data berhasil ditampilkan $userDataMap" );
+
+      setState(() {
+        userData = userDataMap;
+        userData2 = userDataTransport ;
+      });
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDataUser( 1);
+  }
+
 
 
   @override
@@ -50,6 +90,44 @@ class _InformationPageState extends State<InformationPage> {
           ),
         ),
       ),
+
+      body: Center(
+        child: userData.isEmpty && userData2.isEmpty
+            ? const CircularProgressIndicator() // Loading indicator
+            : Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+          Container(
+          width: 120,
+          height: 120,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            image: DecorationImage(
+              image: userData["photo"] == null
+                  ? const AssetImage(
+                'assets/images/img_profile.png',
+              )
+                  : const NetworkImage(
+                  "https://ouch-cdn2.icons8.com/84zU-uvFboh65geJMR5XIHCaNkx-BZ2TahEpE9TpVJM/rs:fit:784:784/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9wbmcvODU5/L2E1MDk1MmUyLTg1/ZTMtNGU3OC1hYzlh/LWU2NDVmMWRiMjY0/OS5wbmc.png")
+              as ImageProvider,
+            ),
+          ),
+
+        ),
+            const SizedBox( height: 30,),
+
+            Text('Name: ${userData["name"]}'),
+            Text('Email: ${userData["email"]}'),
+            Text('Phone: ${userData["phone"]}'),
+            Text('Role Id: ${userData["role_id"]}'),
+
+            Text('Kendaraan: ${userData2["type"]}'),
+            Text('Posisi: ${userData2["driver"]}'),
+
+          ],
+        ),
+      ),
     );
+
   }
 }

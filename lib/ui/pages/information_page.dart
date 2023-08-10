@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:jti_warehouse_driver/api/constant.dart';
 import 'package:jti_warehouse_driver/api/key.dart';
-import 'package:jti_warehouse_driver/ui/pages/home_page.dart';
-import 'package:jti_warehouse_driver/ui/pages/models/scan_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -22,8 +20,8 @@ class _InformationPageState extends State<InformationPage> {
   // User? userData;
 
   _logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove('user');
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // prefs.remove('user');
     Navigator.pushNamedAndRemoveUntil(
         context, '/sign-in', ModalRoute.withName('/sign-in'));
   }
@@ -40,7 +38,7 @@ class _InformationPageState extends State<InformationPage> {
       final data = json.decode(response.body);
       final userDataMap = data["data"][0]["id_track_driver"]["user"];
       final userDataTransport = data["data"][0]["id_track_driver"]["transport"];
-      print("Data berhasil ditampilkan $userDataMap" );
+      print("Data berhasil ditampilkan $userDataMap , $userDataTransport" );
 
       setState(() {
         userData = userDataMap;
@@ -56,7 +54,6 @@ class _InformationPageState extends State<InformationPage> {
     super.initState();
     fetchDataUser( 1);
   }
-
 
 
   @override
@@ -115,16 +112,16 @@ class _InformationPageState extends State<InformationPage> {
             const SizedBox( height: 30,),
 
             Text('Name: ${userData["name"]}'),
-            SizedBox( height: 10),
+            const SizedBox( height: 10),
             Text('Email: ${userData["email"]}'),
-            SizedBox( height: 10),
+            const SizedBox( height: 10),
             Text('Phone: ${userData["phone"]}'),
-            SizedBox( height: 10),
+            const SizedBox( height: 10),
             Text('Role Id: ${userData["role_id"]}'),
-            SizedBox( height: 10),
+            const SizedBox( height: 10),
 
             Text('Kendaraan: ${userData2["type"]}'),
-            SizedBox( height: 10),
+            const SizedBox( height: 10),
             Text('Posisi: ${userData2["driver"]}'),
 
           ],

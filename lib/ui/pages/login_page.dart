@@ -154,8 +154,8 @@ class _LoginPageState extends State<LoginPage> {
                 CustomFilledButton(
                   title: 'Sign In',
                   onPressed: () async {
-                    SharedPreferences pref = await SharedPreferences.getInstance();
-                    pref.setString("", "");
+                    // SharedPreferences pref = await SharedPreferences.getInstance();
+                    // pref.setString("", "");
 
 
                     login(emailController.text.toString(),

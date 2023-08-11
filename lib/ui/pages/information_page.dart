@@ -6,6 +6,9 @@ import 'package:jti_warehouse_driver/api/key.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
+import 'models/user_model.dart';
+
+
 class InformationPage extends StatefulWidget {
   const InformationPage({super.key});
 
@@ -14,36 +17,28 @@ class InformationPage extends StatefulWidget {
 }
 
 class _InformationPageState extends State<InformationPage> {
-  Map<String, dynamic> userData = {};
-  Map<String, dynamic> userData2 = {};
-
-  // User? userData;
+  // Map<String, dynamic> userData = {};
+  User? userData;
 
   _logout() async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // prefs.remove('user');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('user');
     Navigator.pushNamedAndRemoveUntil(
         context, '/sign-in', ModalRoute.withName('/sign-in'));
   }
 
-  Future<void> fetchDataUser(int id) async {
-    var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.getLocation + id.toString() );
-    final response = await http.get(url,
-        headers: {
+  Future<UserModel> fetchDataUser(int id) async {
+    var url = Uri.parse(
+        ApiConstants.baseUrl + ApiConstants.getLocation + id.toString());
+    final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $bearerToken'
     });
 
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final userDataMap = data["data"][0]["id_track_driver"]["user"];
-      final userDataTransport = data["data"][0]["id_track_driver"]["transport"];
-      print("Data berhasil ditampilkan $userDataMap , $userDataTransport" );
 
-      setState(() {
-        userData = userDataMap;
-        userData2 = userDataTransport ;
-      });
+      print("Data berhasil ditampilkan ${response.body}");
+      return UserModel.fromJson(json.decode(response.body));
     } else {
       throw Exception('Failed to load data');
     }
@@ -52,13 +47,12 @@ class _InformationPageState extends State<InformationPage> {
   @override
   void initState() {
     super.initState();
-    fetchDataUser( 1);
+    fetchDataUser(1);
   }
-
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: const Text('Informasi'),
         titleTextStyle: const TextStyle(
@@ -87,47 +81,71 @@ class _InformationPageState extends State<InformationPage> {
           ),
         ),
       ),
+      body: FutureBuilder<UserModel>(
+        future: fetchDataUser(1), // Call the function to fetch user data
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else if (snapshot.hasData) {
+            final userData = snapshot.data!.data?.first;
+            final transport = userData?.idTrackDriver?.transport;
+            final user = userData?.idTrackDriver?.user;
 
-      body: Center(
-        child: userData.isEmpty && userData2.isEmpty
-            ? const CircularProgressIndicator() // Loading indicator
-            : Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-          Container(
-          width: 140,
-          height: 150,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            image: DecorationImage(
-              image: userData["photo"] == null
-                  ? NetworkImage(userData["photo"])
-                  : const NetworkImage(
-                  "https://ouch-cdn2.icons8.com/84zU-uvFboh65geJMR5XIHCaNkx-BZ2TahEpE9TpVJM/rs:fit:784:784/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9wbmcvODU5/L2E1MDk1MmUyLTg1/ZTMtNGU3OC1hYzlh/LWU2NDVmMWRiMjY0/OS5wbmc.png")
-              as ImageProvider,
-            ),
-          ),
-
-        ),
-            const SizedBox( height: 30,),
-
-            Text('Name: ${userData["name"]}'),
-            const SizedBox( height: 10),
-            Text('Email: ${userData["email"]}'),
-            const SizedBox( height: 10),
-            Text('Phone: ${userData["phone"]}'),
-            const SizedBox( height: 10),
-            Text('Role Id: ${userData["role_id"]}'),
-            const SizedBox( height: 10),
-
-            Text('Kendaraan: ${userData2["type"]}'),
-            const SizedBox( height: 10),
-            Text('Posisi: ${userData2["driver"]}'),
-
-          ],
-        ),
+            return Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 12),
+                  Text('Nama Pengemudi: ${user?.name ?? ''}'),
+                  Text('Nomor Kendaraan: ${transport?.number ?? ''}'),
+                  Text('Email Pengemudi: ${user?.email ?? ''}'),
+                  Text('Nomor Telepon: ${user?.phone ?? ''}'),
+                  // Text('Status Kendaraan: ${transport?.status ?? ''}'),
+                ],
+              ),
+            );
+          } else {
+            return Text('No data available');
+          }
+        },
       ),
-    );
 
+      // body: Center(
+      //   child: userData==null && userData2.isEmpty
+      //       ? const CircularProgressIndicator() // Loading indicator
+      //       : Column(
+      //     mainAxisAlignment: MainAxisAlignment.center,
+      //     children: <Widget>[
+      //     Container(
+      //     width: 140,
+      //     height: 150,
+      //     decoration: const BoxDecoration(
+      //       shape: BoxShape.circle,
+      //       image: DecorationImage(
+      //         image: NetworkImage(
+      //             'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'),
+      //         fit: BoxFit.fill,
+      //       ),
+      //     ),
+      //
+      //   ),
+      //       const SizedBox( height: 30,),
+      //
+      //       Text('Nama: ${user?.name ?? ''}'),
+      //       Text('Email: ${user?.email ?? ''}'),
+      //
+      //
+      //
+      //       Text('Kendaraan: ${userData2["type"]}'),
+      //       const SizedBox( height: 10),
+      //       Text('Posisi: ${userData2["driver"]}'),
+      //
+      //     ],
+      //   ),
+      // ),
+    );
   }
 }

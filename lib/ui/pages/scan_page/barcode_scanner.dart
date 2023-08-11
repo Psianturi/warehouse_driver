@@ -22,7 +22,7 @@ class ScanPage extends StatefulWidget {
 }
 
 class _ScanPageState extends State<ScanPage> {
-  ScanModel? scanModel;
+  ScanResponseModel? scanModel;
 
   Future<void> _scanBarcode(BuildContext context) async {
     try {
@@ -33,7 +33,7 @@ class _ScanPageState extends State<ScanPage> {
         print("Barcode: $barcode");
 
         // Setelah scan selesai, pindah ke halaman transaksi
-        Navigator.pushReplacementNamed(context, '/transaction');
+        // Navigator.pushReplacementNamed(context, '/transaction');
       } else {
         // Jika pengguna membatalkan scan, tampilkan dialog
         _showScanFailedDialog(context);
@@ -80,19 +80,40 @@ class _ScanPageState extends State<ScanPage> {
     );
   }
 
-  Future<void> scanDataToApi(accessToken) async {
+  Future<void> scanDataToApi(
+       int userId,
+       int isFinished,
+       double lat,
+       double long,
+      ) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('token', HttpHeaders.proxyAuthorizationHeader);
-    _scanBarcode(context);
+
+    final String trNumber = "SHIP-2023728-00035";
+    // final int userId = 24;
+    // final int isFinished = 0;
+    // final double lat = -6.2576241;
+    // final double long = 106.8380971;
+    // _scanBarcode(context);
+    final requestBody = json.encode(
+        {
+          "tr_number": trNumber,
+              "user_id": userId,
+              "is_finished": isFinished,
+              "lat": lat,
+              "long": long,
+        });
 
     var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.scanAssignDriver);
+
     var headers = { 'Content-Type': 'application/json',
       'Authorization':
     'Bearer $bearerToken' };
-    var response = await http.post(url, headers: headers);
+
+    var response = await http.post(url, headers: headers, body: requestBody);
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
-    print('Response jsonResponse: ${ScanModel.fromJson(jsonDecode(response.body))}');
+    print('Response jsonResponse: ${ScanResponseModel.fromJson(jsonDecode(response.body))}');
 
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -103,8 +124,8 @@ class _ScanPageState extends State<ScanPage> {
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
-        scanModel = ScanModel.fromJson(jsonResponse);
-        Navigator.pushNamed(context, '/bottom-menu');
+        scanModel = ScanResponseModel.fromJson(jsonResponse);
+        Navigator.pushNamed(context, '/transaction');
       } else {
         print('Gagal mengirim data ke API.');
         Navigator.pushNamed(context, '/home');
@@ -183,10 +204,10 @@ class _ScanPageState extends State<ScanPage> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed:  () {
-                scanDataToApi('token');
+                scanDataToApi(  1, 1, 0.0, 0.0);
                 // sendScanDataToApi('tr_number', 1, true, 0.0, 0.0, 'token');
               },
-              child: Text("Scan Barcode"),
+              child: const Text("Scan Barcode"),
             ),
           ],
         ),

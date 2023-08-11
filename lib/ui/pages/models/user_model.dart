@@ -89,13 +89,15 @@ class User {
   String? email;
   String? phone;
   String? name;
-  // ... tambahkan properti lainnya yang diperlukan
+  String? photo;
+
 
   User({
     this.id,
     this.email,
     this.phone,
     this.name,
+    this.photo, //
     // ... inisialisasi properti lainnya
   });
 
@@ -104,6 +106,7 @@ class User {
     email = json['email'];
     phone = json['phone'];
     name = json['name'];
+    photo = json['photo'];
     // ... inisialisasi properti lainnya
   }
 }

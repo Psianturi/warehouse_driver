@@ -98,12 +98,12 @@ class _HomePageState extends State<HomePage> {
 
 
     setState(() {
-      _driverLocation = LocationData(
-        lat: lat,
-        long: long,
-        elevasi: elevasi,
-        kecepatan: kecepatan,
-      );
+      // _driverLocation = LocationData(
+      //   lat: lat,
+      //   long: long,
+      //   elevasi: elevasi,
+      //   kecepatan: kecepatan,
+      // );
     });
     // Panggil fungsi untuk mengirim pembaruan lokasi ke endpoint API
     await _sendLocationUpdateToAPI(lat, long, elevasi, kecepatan, 1);

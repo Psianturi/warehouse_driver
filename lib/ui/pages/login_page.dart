@@ -104,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
 
             ),
           ),
-          SizedBox(height: 120,
+          SizedBox(height: 130,
               child: Lottie.asset("assets/anims/truck_driver.json")),
 
           Container(

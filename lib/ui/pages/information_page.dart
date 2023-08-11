@@ -81,11 +81,12 @@ class _InformationPageState extends State<InformationPage> {
           ),
         ),
       ),
-      body: FutureBuilder<UserModel>(
+      body:
+      FutureBuilder<UserModel>(
         future: fetchDataUser(1), // Call the function to fetch user data
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else if (snapshot.hasData) {
@@ -94,14 +95,28 @@ class _InformationPageState extends State<InformationPage> {
             final user = userData?.idTrackDriver?.user;
 
             return Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 12),
+                   Center(
+                child:
+                  CircleAvatar(
+                    radius: 50, // Adjust the radius as needed
+                    // kondisi jika user database tidak mempunyai foto, maka gunakan network image
+                    backgroundImage: NetworkImage(
+                        user?.photo ??
+                            'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'),
+
+                  ),),
+                  const SizedBox(height: 22),
                   Text('Nama Pengemudi: ${user?.name ?? ''}'),
+                  SizedBox(height: 14),
                   Text('Nomor Kendaraan: ${transport?.number ?? ''}'),
+                  SizedBox(height: 14),
                   Text('Email Pengemudi: ${user?.email ?? ''}'),
+                  SizedBox(height: 14),
                   Text('Nomor Telepon: ${user?.phone ?? ''}'),
                   // Text('Status Kendaraan: ${transport?.status ?? ''}'),
                 ],

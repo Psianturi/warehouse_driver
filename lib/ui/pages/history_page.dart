@@ -13,7 +13,7 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  final String loggedInUserId = "your_logged_in_user_id";
+  // final String loggedInUserId = "user_id";
 
   List<Transaction> transactions = [];
 

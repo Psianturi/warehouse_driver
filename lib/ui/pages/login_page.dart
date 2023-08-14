@@ -42,19 +42,29 @@ class _LoginPageState extends State<LoginPage> {
           },
           body: myBody);
 
-      try {
-        if (kDebugMode) {
-          print(jsonDecode(response.body.toString()));
-        }
+        try {
+          final int userId = json.decode(response.body)['data']['user']['id'];
 
         if (response.statusCode == 200) {
           print('ResponseStatus Login: ${response.statusCode}');
           print('ResponseBody Login: ${response.body}');
+          // Save user_id to SharedPreferences,
+
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setInt('user_id',userId );
+
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Login Success"),
             backgroundColor: Colors.lightBlueAccent,
             duration: Duration(seconds: 1),
           ));
+
+          if (prefs.containsKey('user_id')) {
+            print('****user_id nyahh*** : ${prefs.getInt('user_id')}');
+          } else {
+            print('user_id: null');
+          }
+
 
           if (response.statusCode == 200) {
             Navigator.pushNamed(context, '/bottom-menu');

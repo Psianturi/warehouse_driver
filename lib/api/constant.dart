@@ -10,6 +10,7 @@ class ApiConstants {
   static String scanAssignDriver = '/driver/scan_assign_driver';
   static String updateLocation = '/driver/update_location_driver/';  //PUT
   static String getLocation = '/driver/get_location_driver/';  //GET
+  static String getTransactionHistory = '/driver/get_history_trx_driver/';  //GET
   // static String imageUrl = 'http://192.168.22.23:6565/api/v1/public/data_upload/product/';
   static String loginEndPoint = '/auth/login';
   static String getInfo = '/transaction/report/invoiced/quarry_id/1/06-21-2023/06-21-2023';

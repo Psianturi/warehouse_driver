@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
 
   final _formKey = GlobalKey<FormBuilderState>();
 
-  LocationData _driverLocation = LocationData(
+   LocationData _driverLocation = LocationData(
     lat: -6.1754,
     long: 106.8272,
     elevasi: 0.0,
@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
   void initBackgroundFetch() {
     BackgroundFetch.configure(
       BackgroundFetchConfig(
-        minimumFetchInterval: 14,
+        minimumFetchInterval: 15,
         // interval dalam menit untuk pembaruan lokasi (atur sesuai kebutuhan Anda)
         stopOnTerminate: false,
         enableHeadless: true,
@@ -98,12 +98,13 @@ class _HomePageState extends State<HomePage> {
 
 
     setState(() {
-      // _driverLocation = LocationData(
-      //   lat: lat,
-      //   long: long,
-      //   elevasi: elevasi,
-      //   kecepatan: kecepatan,
-      // );
+      // Memperbarui lokasi driver
+      _driverLocation = LocationData(
+        lat: lat,
+        long: long,
+        elevasi: elevasi,
+        kecepatan: kecepatan,
+      );
     });
     // Panggil fungsi untuk mengirim pembaruan lokasi ke endpoint API
     await _sendLocationUpdateToAPI(lat, long, elevasi, kecepatan, 1);

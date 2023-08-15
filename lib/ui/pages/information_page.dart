@@ -19,6 +19,17 @@ class InformationPage extends StatefulWidget {
 class _InformationPageState extends State<InformationPage> {
   // Map<String, dynamic> userData = {};
   User? userData;
+  int? idNya;
+
+
+  void loadId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+     idNya = prefs.getInt('id') ?? 0; // Gunakan default value jika tidak ditemukan
+      print("idNya $idNya");
+    });
+    fetchDataUser(idNya!);
+  }
 
   _logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -47,7 +58,8 @@ class _InformationPageState extends State<InformationPage> {
   @override
   void initState() {
     super.initState();
-    fetchDataUser(1);
+    // fetchDataUser(1);
+    loadId();
   }
 
   @override

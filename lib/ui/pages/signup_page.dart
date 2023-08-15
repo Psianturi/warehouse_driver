@@ -63,8 +63,7 @@ class _SignUpPageState extends State<SignUpPage> {
           ));
 
           if (response.statusCode == 200) {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) =>  HomePage()));
+            Navigator.pushNamed(context, '/bottom-menu');
           } else {
             print('failed');
           }

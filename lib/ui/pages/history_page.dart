@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:jti_warehouse_driver/api/constant.dart';
 import 'package:jti_warehouse_driver/api/key.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -14,18 +15,26 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   // final String loggedInUserId = "user_id";
-
+  late int loggedInUserId;
   List<Transaction> transactions = [];
+
+  void loadUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      loggedInUserId = prefs.getInt('user_id') ?? 0; // Gunakan default value jika tidak ditemukan
+    });
+    fetchHistoryData(loggedInUserId);
+  }
 
   @override
   void initState() {
     super.initState();
-    fetchHistoryData( 1);
+    loadUserId();
   }
 
-  Future<void> fetchHistoryData(user_id) async {
+  Future<void> fetchHistoryData(userId) async {
     var url = Uri.parse(
-        ApiConstants.baseUrl + ApiConstants.getTransactionHistory + user_id.toString());
+        ApiConstants.baseUrl + ApiConstants.getTransactionHistory + userId.toString());
     final response = await http.get(url,
         headers: {
           'Content-Type': 'application/json',
@@ -85,15 +94,18 @@ class _HistoryPageState extends State<HistoryPage> {
           final transaction = transactions[index];
           final transactionData = transaction.transactionData;
           final productName = transactionData['product']['name'];
+          final trNumber = transaction.trNumber;
           final sendAt = transactionData['send_at'];
 
           return Card(
             child: ListTile(
               title: Text(productName),
+              // title: Text(trNumber),
               subtitle: Text('Sent at: $sendAt'),
               trailing: Text(transaction.status),
               onTap: () {
                 // Add your action when a transaction is tapped
+
               },
             ),
           );

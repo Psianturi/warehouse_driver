@@ -103,7 +103,7 @@ class _InformationPageState extends State<InformationPage> {
             return Text('Error: ${snapshot.error}');
           } else if (snapshot.hasData) {
             final userData = snapshot.data!.data?.first;
-            final transport = userData?.idTrackDriver?.transport;
+            final transport = userData?.idTrackDriver?.numberVehicle;
             final user = userData?.idTrackDriver?.user;
 
             return Padding(
@@ -125,7 +125,7 @@ class _InformationPageState extends State<InformationPage> {
                   const SizedBox(height: 22),
                   Text('Nama Pengemudi: ${user?.name ?? ''}'),
                   SizedBox(height: 14),
-                  Text('Nomor Kendaraan: ${transport?.number ?? ''}'),
+                  Text('Nomor Kendaraan: ${transport ?? ''}'),
                   SizedBox(height: 14),
                   Text('Email Pengemudi: ${user?.email ?? ''}'),
                   SizedBox(height: 14),

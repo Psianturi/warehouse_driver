@@ -140,7 +140,8 @@ class _HomePageState extends State<HomePage> {
   }
 
 
-  Future<void> _sendLocationUpdateToAPI(double lat,
+  Future<void> _sendLocationUpdateToAPI(
+      double lat,
       double long,
       double elevasi,
       double kecepatan,
@@ -153,7 +154,8 @@ class _HomePageState extends State<HomePage> {
           "lat": "$lat",
           "long": "$long",
           "elevasi": "$elevasi",
-          "kecepatan": "$kecepatan"
+          "kecepatan": "$kecepatan",
+          "battery": "$batteryLevel"
         });
 
     try {

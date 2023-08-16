@@ -18,13 +18,11 @@ class _HistoryPageState extends State<HistoryPage> {
   // final String loggedInUserId = "user_id";
   late int loggedInUserId;
   List<Transaction> transaction = [];
-  List<Product> products = [];
 
   void loadUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      loggedInUserId = prefs.getInt('user_id') ??
-          0; // Gunakan default value jika tidak ditemukan
+      loggedInUserId = prefs.getInt('id') ?? 0; // Gunakan default value jika tidak ditemukan
     });
     fetchHistoryData(loggedInUserId);
   }
@@ -54,14 +52,21 @@ class _HistoryPageState extends State<HistoryPage> {
         transaction = data.map((transactionData) {
           return Transaction(
             trNumber: transactionData['tr_number'],
-            transactionData: transactionData,
-            userSend: transactionData['user_send'],
             status: transactionData['status'],
             sendAt: transactionData['send_at'],
             receiveAt: transactionData['receive_at'],
-            // productName: transactionData['product']['name'],
-            product: transactionData['product']!= null ? Product.fromJson(transactionData['product']) : null,
-            // productName: transactionData['product']['name'],
+            productName: transactionData['product_name'],
+            quantity: transactionData['quantity'],
+            // product: Product(
+            //   id: transactionData['product']['id'],
+            //   name: transactionData['product']['name'],
+            //   priceBuy: transactionData['product']['price_buy'],
+            //   priceSale: transactionData['product']['price_sale'],
+            //   createdAt: transactionData['product']['created_at'],
+            //   updatedAt: transactionData['product']['updated_at'],
+            // ),
+            transactionData: transactionData,
+            // product: transactionData['product'],
           );
         }).toList();
 
@@ -98,17 +103,28 @@ class _HistoryPageState extends State<HistoryPage> {
         // itemCount: products.length,
 
         itemBuilder: (context, index) {
+          // final Transaction transactionData = transaction[index];
+          // final String? trNumber =  transactionData.trNumber;
+          // final String? status = transactionData.status;
+          final String? productName = transaction[index].productName;
           final String? trNumber = transaction[index].trNumber;
           final String? status = transaction[index].status;
           final String? sendAt = transaction[index].sendAt;
           final String? receiveAt = transaction[index].receiveAt;
-          // final String? productName = products[index].name;
-          final Product? productName = transaction[index].product;
-          print('product name WOIIII: $productName');
+          final int? quantity = transaction[index].quantity;
+
+          print('Transaction Data2: $trNumber');
+          print('Transaction Data3: $productName');
+          print('Transaction Data4: $status');
+          print('Transaction Data5: $sendAt');
+          print('Transaction Data6: $receiveAt');
+          print('Transaction Data8: $quantity');
+
+
           return Card(
             child: ListTile(
-              title: Text('Transaction Number: $trNumber'),
-              subtitle: Text('Product Name: $productName'),
+              title: Text('Product: $productName'),
+              subtitle: Text('Transaction Number: $trNumber'),
               trailing: Text('Status: $status'),
               onTap: () {
                 // Add your action when a transaction is tapped

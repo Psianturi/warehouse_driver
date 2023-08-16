@@ -1,11 +1,10 @@
-class HistoryData {
+class HistoryResponse {
   Meta? meta;
-
   List<Data>? data;
 
-  HistoryData({this.meta,  this.data});
+  HistoryResponse({this.meta, this.data});
 
-  HistoryData.fromJson(Map<String, dynamic> json) {
+  HistoryResponse.fromJson(Map<String, dynamic> json) {
     meta = json['meta'] != null ? new Meta.fromJson(json['meta']) : null;
 
     if (json['data'] != null) {
@@ -58,6 +57,7 @@ class Data {
   int? id;
   String? trNumber;
   Transaction? transaction;
+  String? status;
   IdTrackDriver? idTrackDriver;
   double? lat;
   double? long;
@@ -69,6 +69,7 @@ class Data {
       {this.id,
         this.trNumber,
         this.transaction,
+        this.status,
         this.idTrackDriver,
         this.lat,
         this.long,
@@ -82,6 +83,7 @@ class Data {
     transaction = json['transaction'] != null
         ? new Transaction.fromJson(json['transaction'])
         : null;
+    status = json['status'];
     idTrackDriver = json['id_track_driver'] != null
         ? new IdTrackDriver.fromJson(json['id_track_driver'])
         : null;
@@ -99,14 +101,15 @@ class Data {
     if (this.transaction != null) {
       data['transaction'] = this.transaction!.toJson();
     }
+    data['status'] = this.status;
     if (this.idTrackDriver != null) {
       data['id_track_driver'] = this.idTrackDriver!.toJson();
     }
-    data['lat'] = this.lat;
-    data['long'] = this.long;
-    data['elevasi'] = this.elevasi;
-    data['kecepatan'] = this.kecepatan;
-    data['battery'] = this.battery;
+    data['lat'] = lat;
+    data['long'] = long;
+    data['elevasi'] = elevasi;
+    data['kecepatan'] = kecepatan;
+    data['battery'] = battery;
     return data;
   }
 }
@@ -115,6 +118,7 @@ class Transaction {
   int? id;
   String? trNumber;
   int? productId;
+  String? productName;
   Product? product;
   String? unit;
   int? priceBuy;
@@ -152,6 +156,7 @@ class Transaction {
       {this.id,
         this.trNumber,
         this.productId,
+        this.productName,
         this.product,
         this.unit,
         this.priceBuy,
@@ -183,13 +188,15 @@ class Transaction {
         this.receiveAt,
         this.statusAt,
         this.updatedAt,
-        this.createdAt, required transactionData,  });
+        this.createdAt, required transactionData});
 
   Transaction.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     trNumber = json['tr_number'];
     productId = json['product_id'];
-    product = json['product'] != null ? new Product.fromJson(json['product']) : null;
+    productName = json['product_name'];
+    product =
+    json['product'] != null ? Product.fromJson(json['product']) : null;
     unit = json['unit'];
     priceBuy = json['price_buy'];
     priceSale = json['price_sale'];
@@ -201,7 +208,7 @@ class Transaction {
     totalSale = json['total_sale'];
     quarryId = json['quarry_id'];
     quarry =
-    json['quarry'] != null ? new Quarry.fromJson(json['quarry']) : null;
+    json['quarry'] != null ? Quarry.fromJson(json['quarry']) : null;
     photoProductSend = json['photo_product_send'];
     photoProductReceive = json['photo_product_receive'];
     photoNoteSend = json['photo_note_send'];
@@ -234,25 +241,26 @@ class Transaction {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = this.id;
-    data['tr_number'] = this.trNumber;
-    data['product_id'] = this.productId;
-    if (this.product != null) {
-      data['product'] = this.product!.toJson();
+    data['tr_number'] = trNumber;
+    data['product_id'] = productId;
+    data['product_name'] = productName;
+    if (product != null) {
+      data['product'] = product!.toJson();
     }
-    data['unit'] = this.unit;
-    data['price_buy'] = this.priceBuy;
-    data['price_sale'] = this.priceSale;
-    data['high'] = this.high;
-    data['wide'] = this.wide;
-    data['length'] = this.length;
-    data['quantity'] = this.quantity;
-    data['total_buy'] = this.totalBuy;
-    data['total_sale'] = this.totalSale;
-    data['quarry_id'] = this.quarryId;
-    if (this.quarry != null) {
-      data['quarry'] = this.quarry!.toJson();
+    data['unit'] = unit;
+    data['price_buy'] = priceBuy;
+    data['price_sale'] = priceSale;
+    data['high'] = high;
+    data['wide'] = wide;
+    data['length'] = length;
+    data['quantity'] = quantity;
+    data['total_buy'] = totalBuy;
+    data['total_sale'] = totalSale;
+    data['quarry_id'] = quarryId;
+    if (quarry != null) {
+      data['quarry'] = quarry!.toJson();
     }
     data['photo_product_send'] = this.photoProductSend;
     data['photo_product_receive'] = this.photoProductReceive;
@@ -524,23 +532,16 @@ class IdTrackDriver {
   int? id;
   String? trNumber;
   String? status;
-  Null? transport;
   UserSend? user;
   String? numberVehicle;
 
   IdTrackDriver(
-      {this.id,
-        this.trNumber,
-        this.status,
-        this.transport,
-        this.user,
-        this.numberVehicle});
+      {this.id, this.trNumber, this.status, this.user, this.numberVehicle});
 
   IdTrackDriver.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     trNumber = json['tr_number'];
     status = json['status'];
-    transport = json['transport'];
     user = json['user'] != null ? new UserSend.fromJson(json['user']) : null;
     numberVehicle = json['number_vehicle'];
   }
@@ -550,7 +551,6 @@ class IdTrackDriver {
     data['id'] = this.id;
     data['tr_number'] = this.trNumber;
     data['status'] = this.status;
-    data['transport'] = this.transport;
     if (this.user != null) {
       data['user'] = this.user!.toJson();
     }

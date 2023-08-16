@@ -51,7 +51,8 @@ class _LoginPageState extends State<LoginPage> {
           // Save user_id to SharedPreferences,
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setInt('user_id',userId );
+          prefs.setInt('id',userId );
+
 
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Login Success"),
@@ -59,10 +60,10 @@ class _LoginPageState extends State<LoginPage> {
             duration: Duration(seconds: 1),
           ));
 
-          if (prefs.containsKey('user_id')) {
-            print('****user_id nyahh*** : ${prefs.getInt('user_id')}');
+          if (prefs.containsKey('id')) {
+            print('****user_id nyahh*** : ${prefs.getInt('id')}');
           } else {
-            print('user_id: null');
+            print('uid: null');
           }
 
 

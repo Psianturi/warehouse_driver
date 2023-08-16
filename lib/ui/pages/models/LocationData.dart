@@ -4,12 +4,14 @@ class LocationData {
   double long;
   double elevasi;
   double kecepatan;
+  int battery;
 
   LocationData({
     required this.lat,
     required this.long,
     required this.elevasi,
     required this.kecepatan,
+    required this.battery,
   });
 
   Map<String, dynamic> toJson() {
@@ -18,6 +20,7 @@ class LocationData {
       'longitude': long,
       'elevasi': elevasi,
       'kecepatan': kecepatan,
+      'battery': battery,
     };
   }
 }

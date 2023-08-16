@@ -1,10 +1,11 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:jti_warehouse_driver/api/constant.dart';
 import 'package:jti_warehouse_driver/api/key.dart';
+import 'package:jti_warehouse_driver/ui/pages/models/history_response.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -16,12 +17,14 @@ class HistoryPage extends StatefulWidget {
 class _HistoryPageState extends State<HistoryPage> {
   // final String loggedInUserId = "user_id";
   late int loggedInUserId;
-  List<Transaction> transactions = [];
+  List<Transaction> transaction = [];
+  List<Product> products = [];
 
   void loadUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      loggedInUserId = prefs.getInt('user_id') ?? 0; // Gunakan default value jika tidak ditemukan
+      loggedInUserId = prefs.getInt('user_id') ??
+          0; // Gunakan default value jika tidak ditemukan
     });
     fetchHistoryData(loggedInUserId);
   }
@@ -33,13 +36,13 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   Future<void> fetchHistoryData(userId) async {
-    var url = Uri.parse(
-        ApiConstants.baseUrl + ApiConstants.getTransactionHistory + userId.toString());
-    final response = await http.get(url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $bearerToken'
-        });
+    var url = Uri.parse(ApiConstants.baseUrl +
+        ApiConstants.getTransactionHistory +
+        userId.toString());
+    final response = await http.get(url, headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $bearerToken'
+    });
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
@@ -48,12 +51,17 @@ class _HistoryPageState extends State<HistoryPage> {
       if (responseData.containsKey('data')) {
         final List<dynamic> data = responseData['data'];
 
-        transactions = data.map((transactionData) {
+        transaction = data.map((transactionData) {
           return Transaction(
             trNumber: transactionData['tr_number'],
-            transactionData: transactionData['transaction'],
-            user: transactionData['user'],
+            transactionData: transactionData,
+            userSend: transactionData['user_send'],
             status: transactionData['status'],
+            sendAt: transactionData['send_at'],
+            receiveAt: transactionData['receive_at'],
+            // productName: transactionData['product']['name'],
+            product: transactionData['product']!= null ? Product.fromJson(transactionData['product']) : null,
+            // productName: transactionData['product']['name'],
           );
         }).toList();
 
@@ -64,11 +72,9 @@ class _HistoryPageState extends State<HistoryPage> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: const Text('Riwayat'),
         titleTextStyle: const TextStyle(
@@ -86,26 +92,26 @@ class _HistoryPageState extends State<HistoryPage> {
             bottom: Radius.circular(25),
           ),
         ),
-
       ),
       body: ListView.builder(
-        itemCount: transactions.length,
-        itemBuilder: (context, index) {
-          final transaction = transactions[index];
-          final transactionData = transaction.transactionData;
-          final productName = transactionData['product']['name'];
-          final trNumber = transaction.trNumber;
-          final sendAt = transactionData['send_at'];
+        itemCount: transaction.length,
+        // itemCount: products.length,
 
+        itemBuilder: (context, index) {
+          final String? trNumber = transaction[index].trNumber;
+          final String? status = transaction[index].status;
+          final String? sendAt = transaction[index].sendAt;
+          final String? receiveAt = transaction[index].receiveAt;
+          // final String? productName = products[index].name;
+          final Product? productName = transaction[index].product;
+          print('product name WOIIII: $productName');
           return Card(
             child: ListTile(
-              title: Text(productName),
-              // title: Text(trNumber),
-              subtitle: Text('Sent at: $sendAt'),
-              trailing: Text(transaction.status),
+              title: Text('Transaction Number: $trNumber'),
+              subtitle: Text('Product Name: $productName'),
+              trailing: Text('Status: $status'),
               onTap: () {
                 // Add your action when a transaction is tapped
-
               },
             ),
           );
@@ -140,21 +146,20 @@ class _HistoryPageState extends State<HistoryPage> {
       //     ],
       //   ),
       // )
-
     );
   }
 }
 
-class Transaction {
-  final String trNumber;
-  final Map<String, dynamic> transactionData;
-  final Map<String, dynamic> user;
-  final String status;
-
-  Transaction({
-    required this.trNumber,
-    required this.transactionData,
-    required this.user,
-    required this.status,
-  });
-}
+// class Transaction {
+//   final String trNumber;
+//   final Map<String, dynamic> transactionData;
+//   final Map<String, dynamic> user;
+//   final String status;
+//
+//   Transaction({
+//     required this.trNumber,
+//     required this.transactionData,
+//     required this.user,
+//     required this.status,
+//   });
+// }

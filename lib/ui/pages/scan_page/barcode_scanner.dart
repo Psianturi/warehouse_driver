@@ -7,11 +7,11 @@ import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:jti_warehouse_driver/api/constant.dart';
 import 'package:jti_warehouse_driver/api/key.dart';
 import 'package:jti_warehouse_driver/ui/pages/models/scan_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 
 
 class ScanPage extends StatefulWidget {
@@ -33,7 +33,7 @@ class _ScanPageState extends State<ScanPage> {
         print("Barcode: $barcode");
 
         // Setelah scan selesai, pindah ke halaman transaksi
-        // Navigator.pushReplacementNamed(context, '/transaction');
+        Navigator.pushReplacementNamed(context, '/transaction');
       } else {
         // Jika pengguna membatalkan scan, tampilkan dialog
         _showScanFailedDialog(context);
@@ -89,12 +89,12 @@ class _ScanPageState extends State<ScanPage> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('token', HttpHeaders.proxyAuthorizationHeader);
 
-    final String trNumber = "SHIP-2023728-00035";
+    const String trNumber = "SHIP-2023728-00035";
     // final int userId = 24;
     // final int isFinished = 0;
     // final double lat = -6.2576241;
     // final double long = 106.8380971;
-    // _scanBarcode(context);
+    _scanBarcode(context);
     final requestBody = json.encode(
         {
           "tr_number": trNumber,

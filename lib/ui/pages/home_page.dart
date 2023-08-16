@@ -15,7 +15,7 @@ import 'package:jti_warehouse_driver/ui/pages/models/LocationData.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:battery_plus/battery_plus.dart';
 import '../../api/key.dart';
 
 class HomePage extends StatefulWidget {
@@ -33,9 +33,11 @@ class _HomePageState extends State<HomePage> {
     lat: -6.1754,
     long: 106.8272,
     elevasi: 0.0,
-    kecepatan: 0.0,
+    kecepatan: 1.0,
+    battery: 50,
   );
-
+  // Instantiate it
+  var battery = Battery();
   final Faker _faker = Faker();
   final FlutterLocalNotificationsPlugin _localNotifications =
   FlutterLocalNotificationsPlugin();
@@ -49,6 +51,7 @@ class _HomePageState extends State<HomePage> {
 
     // Memperbarui lokasi sekali saat aplikasi dijalankan
     _updateDriverLocation();
+
   }
 
 
@@ -77,6 +80,7 @@ class _HomePageState extends State<HomePage> {
     double long = double.parse(_faker.geo.longitude().toString());
     double elevasi = double.parse(_faker.randomGenerator.decimal().toStringAsFixed(2));
     double kecepatan = double.parse(_faker.randomGenerator.decimal(min: 0, scale: 100).toStringAsFixed(2));
+    int batteryLevel = int.parse(( battery.batteryLevel).toString());
 
     // double lat = _driverLocation.lat;
     // double long = _driverLocation.long;
@@ -104,10 +108,11 @@ class _HomePageState extends State<HomePage> {
         long: long,
         elevasi: elevasi,
         kecepatan: kecepatan,
+        battery: batteryLevel,
       );
     });
     // Panggil fungsi untuk mengirim pembaruan lokasi ke endpoint API
-    await _sendLocationUpdateToAPI(lat, long, elevasi, kecepatan, 1);
+    await _sendLocationUpdateToAPI(lat, long, elevasi, kecepatan, batteryLevel, 1);
   }
 
   // Fungsi yang akan dijalankan oleh background_fetch
@@ -139,6 +144,7 @@ class _HomePageState extends State<HomePage> {
       double long,
       double elevasi,
       double kecepatan,
+      int batteryLevel,
       int id,
       ) async {
     // String apiUrl = '{{url}}/driver/update_location_driver/1';
@@ -295,19 +301,24 @@ class _HomePageState extends State<HomePage> {
                   'Latitude: ${_driverLocation.lat}',
                   style: TextStyle(fontSize: 14),
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 Text(
                   'Longitude: ${_driverLocation.long}',
                   style: TextStyle(fontSize: 14),
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 Text(
                   'Elevasi: ${_driverLocation.elevasi}',
                   style: TextStyle(fontSize: 14),
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 Text(
                   'Kecepatan: ${_driverLocation.kecepatan}',
+                  style: TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  'Baterry: ${_driverLocation.battery}',
                   style: TextStyle(fontSize: 14),
                 ),
                 const SizedBox(height: 14),

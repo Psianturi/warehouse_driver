@@ -107,21 +107,20 @@ class _TransactionPageState extends State<TransactionPage> {
 
                 ElevatedButton(onPressed:
                 () {
-                  Navigator.pushNamed(context, '/barcode-scan',
+                  Navigator.pushNamed(context, '/bottom-menu',
                   );
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                    content: Text("Scan Kembali untuk menyelesaikan transaksi"),
-                    backgroundColor: Colors.blueAccent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(22)),
-                    ),
-                    showCloseIcon: true,
-                    duration: Duration(seconds: 5),
-                  ));
+                  // ScaffoldMessenger.of(context).showSnackBar(
+                  //     const SnackBar(
+                  //   content: Text("Scan Kembali untuk menyelesaikan transaksi"),
+                  //   backgroundColor: Colors.blueAccent,
+                  //   shape: RoundedRectangleBorder(
+                  //     borderRadius: BorderRadius.all(Radius.circular(22)),
+                  //   ),
+                  //   showCloseIcon: true,
+                  //   duration: Duration(seconds: 5),
+                  // ));
 
                 },
-                  child: const Text('Selesaikan Transaksi'),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.orangeAccent,
                     shadowColor: Colors.greenAccent,
@@ -130,6 +129,7 @@ class _TransactionPageState extends State<TransactionPage> {
                       borderRadius: BorderRadius.circular(30.0),
                     ),
                   ),
+                  child: const Text('Kembali ke Beranda'),
                 ),
 
                 const SizedBox(height: 20),

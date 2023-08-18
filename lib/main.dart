@@ -1,4 +1,4 @@
-import 'package:barcode_scan2/barcode_scan2.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:jti_warehouse_driver/ui/pages/bottom_bar/bottom_bar_menu.dart';

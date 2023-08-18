@@ -6,14 +6,11 @@ import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
 import 'package:jti_warehouse_driver/api/constant.dart';
 import 'package:jti_warehouse_driver/main.dart';
 import 'package:jti_warehouse_driver/ui/pages/models/LocationData.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:battery_plus/battery_plus.dart';
 import '../../api/key.dart';
@@ -80,7 +77,7 @@ class _HomePageState extends State<HomePage> {
     double long = double.parse(_faker.geo.longitude().toString());
     double elevasi = double.parse(_faker.randomGenerator.decimal().toStringAsFixed(2));
     double kecepatan = double.parse(_faker.randomGenerator.decimal(min: 0, scale: 100).toStringAsFixed(2));
-    int batteryLevel = int.parse(( battery.batteryLevel).toString());
+    int batteryLevel = await _getBatteryLevel();
 
     // double lat = _driverLocation.lat;
     // double long = _driverLocation.long;
@@ -113,6 +110,13 @@ class _HomePageState extends State<HomePage> {
     });
     // Panggil fungsi untuk mengirim pembaruan lokasi ke endpoint API
     await _sendLocationUpdateToAPI(lat, long, elevasi, kecepatan, batteryLevel, 1);
+  }
+
+
+  Future<int> _getBatteryLevel() async {
+    final battery = Battery();
+    final batteryLevel = await battery.batteryLevel;
+    return batteryLevel;
   }
 
   // Fungsi yang akan dijalankan oleh background_fetch
@@ -217,6 +221,13 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    BackgroundFetch.stop(); // Memberhentikan konfigurasi BackgroundFetch
+    super.dispose();
+  }
+
 
   _handleLogout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

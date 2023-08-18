@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
@@ -210,7 +210,6 @@ class _HomePageState extends State<HomePage> {
       platformChannelSpecifics,
     );
 
-
   }
 
   void _showSnackbar() {
@@ -226,6 +225,70 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     BackgroundFetch.stop(); // Memberhentikan konfigurasi BackgroundFetch
     super.dispose();
+  }
+
+  void _showDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shadowColor: Colors.greenAccent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
+          elevation: 8, // Tambahkan nilai elevation untuk efek shadow color
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(Icons.close),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.all(14.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Text('GET INFO', style: TextStyle(fontSize: 16)),
+                    SizedBox(height: 12),
+                    Text('Latitude: ${_driverLocation.lat}', style: TextStyle(fontSize: 14)),
+                    SizedBox(height: 5),
+                    Text('Longitude: ${_driverLocation.long}', style: TextStyle(fontSize: 14)),
+                    SizedBox(height: 5),
+                    Text('Elevasi: ${_driverLocation.elevasi}', style: TextStyle(fontSize: 14)),
+                    SizedBox(height: 5),
+                    Text('Kecepatan: ${_driverLocation.kecepatan}', style: TextStyle(fontSize: 14)),
+                    SizedBox(height: 5),
+                    Text('Baterry: ${_driverLocation.battery}', style: TextStyle(fontSize: 14)),
+                    SizedBox(height: 15),
+                    Text(
+                      'Last Updated: ${DateTime.now().toString()}',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+                    ),
+                    SizedBox(height: 10),
+                    DialogButton(
+                      width: 175,
+                      radius: BorderRadius.circular(25),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _updateDriverLocation();
+                      },
+                      child: Text('UpdateLocation API'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
 
@@ -298,62 +361,78 @@ class _HomePageState extends State<HomePage> {
 
 
         Center(
-          child: AlertDialog(
-            insetPadding: EdgeInsets.zero,
-            shadowColor: Colors.greenAccent,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(28),
-            ),
-            title: const Text('GET INFO',
-              style: TextStyle(fontSize: 16), textAlign: TextAlign.center,
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Latitude: ${_driverLocation.lat}',
-                  style: TextStyle(fontSize: 14),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  'Longitude: ${_driverLocation.long}',
-                  style: TextStyle(fontSize: 14),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  'Elevasi: ${_driverLocation.elevasi}',
-                  style: TextStyle(fontSize: 14),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  'Kecepatan: ${_driverLocation.kecepatan}',
-                  style: TextStyle(fontSize: 14),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  'Baterry: ${_driverLocation.battery}',
-                  style: TextStyle(fontSize: 14),
-                ),
-                const SizedBox(height: 14),
-                Text(
-                  'Last Updated: ${DateTime.now().toString()}',
-                  textAlign: TextAlign.left,
-                  style: const TextStyle(
-                      fontSize: 14, fontStyle: FontStyle.italic),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    _updateDriverLocation();
-                    // _sendLocationUpdateToAPI( _driverLocation.lat, _driverLocation.long, _driverLocation.elevasi, _driverLocation.kecepatan);
-                  },
-                  child: const Text('UpdateLocation API'),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              children: <Widget>[
+                const SizedBox(height: 26),
+                const Text('Klik Untuk Menampilkan Info'),
+                SizedBox(height: 12),
+                DialogButton(
+                  width: 170,
+                  radius: BorderRadius.circular(25),
+                  onPressed: _showDialog, // Ganti _showPopup() dengan _showPopup
+                  child: const Text('Tampilkan Info', style: TextStyle(color: Colors.white, fontSize: 18),),
                 ),
               ],
             ),
-
-
-
           ),
+
+        //   child:
+        //   AlertDialog(
+        //     insetPadding: EdgeInsets.zero,
+        //     shadowColor: Colors.greenAccent,
+        //     shape: RoundedRectangleBorder(
+        //       borderRadius: BorderRadius.circular(28),
+        //     ),
+        //     title: const Text('GET INFO',
+        //       style: TextStyle(fontSize: 16), textAlign: TextAlign.center,
+        //     ),
+        //     content: Column(
+        //       mainAxisSize: MainAxisSize.min,
+        //       children: [
+        //         Text(
+        //           'Latitude: ${_driverLocation.lat}',
+        //           style: TextStyle(fontSize: 14),
+        //         ),
+        //         const SizedBox(height: 5),
+        //         Text(
+        //           'Longitude: ${_driverLocation.long}',
+        //           style: TextStyle(fontSize: 14),
+        //         ),
+        //         const SizedBox(height: 5),
+        //         Text(
+        //           'Elevasi: ${_driverLocation.elevasi}',
+        //           style: TextStyle(fontSize: 14),
+        //         ),
+        //         const SizedBox(height: 5),
+        //         Text(
+        //           'Kecepatan: ${_driverLocation.kecepatan}',
+        //           style: TextStyle(fontSize: 14),
+        //         ),
+        //         const SizedBox(height: 5),
+        //         Text(
+        //           'Baterry: ${_driverLocation.battery}',
+        //           style: TextStyle(fontSize: 14),
+        //         ),
+        //         const SizedBox(height: 14),
+        //         Text(
+        //           'Last Updated: ${DateTime.now().toString()}',
+        //           textAlign: TextAlign.left,
+        //           style: const TextStyle(
+        //               fontSize: 14, fontStyle: FontStyle.italic),
+        //         ),
+        //         ElevatedButton(
+        //           onPressed: () {
+        //             _updateDriverLocation();
+        //             // _sendLocationUpdateToAPI( _driverLocation.lat, _driverLocation.long, _driverLocation.elevasi, _driverLocation.kecepatan);
+        //           },
+        //           child: const Text('UpdateLocation API'),
+        //         ),
+        //       ],
+        //     ),
+        //
+        //   ),
         ),
 
 

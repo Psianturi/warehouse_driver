@@ -23,37 +23,49 @@ class ScanPage extends StatefulWidget {
 
 class _ScanPageState extends State<ScanPage> {
   ScanResponseModel? scanModel;
+  String scannedBarcode = '';
+  String manualBarcode = '';
 
   Future<void> _scanBarcode(BuildContext context) async {
-    try {
-      // Membaca kode barcode menggunakan plugin barcode_scan2
-      ScanResult result = await BarcodeScanner.scan();
-      if (result.rawContent != null) {
-        String barcode = result.rawContent;
-        print("Barcode: $barcode");
+    if (manualBarcode.isEmpty) {
+      try {
+        // Membaca kode barcode menggunakan plugin barcode_scan2
+        ScanResult result = await BarcodeScanner.scan();
+        if (result.rawContent != null) {
+          String barcode = result.rawContent;
+          setState(() {
+            scannedBarcode = barcode;
+          });
+          print("Barcode: $barcode");
+          // Setelah scan selesai, pindah ke halaman transaksi
+          Navigator.pushReplacementNamed(context, '/transaction');
 
-        // Setelah scan selesai, pindah ke halaman transaksi
-        Navigator.pushReplacementNamed(context, '/transaction');
-      } else {
+        } else {
+          // Jika pengguna membatalkan scan, tampilkan dialog
+          _showScanFailedDialog(context);
+        }
+      } on PlatformException catch (e) {
+        if (e.code == BarcodeScanner.cameraAccessDenied) {
+          print("Izin kamera ditolak");
+        } else {
+          print("Error: $e");
+        }
+        // Jika terjadi error dalam proses scanning, tampilkan dialog
+        _showScanFailedDialog(context);
+      } on FormatException {
+        print("Scan dibatalkan oleh pengguna");
         // Jika pengguna membatalkan scan, tampilkan dialog
         _showScanFailedDialog(context);
-      }
-    } on PlatformException catch (e) {
-      if (e.code == BarcodeScanner.cameraAccessDenied) {
-        print("Izin kamera ditolak");
-      } else {
+      } catch (e) {
         print("Error: $e");
+        // Jika terjadi error dalam proses scanning, tampilkan dialog
+        _showScanFailedDialog(context);
       }
-      // Jika terjadi error dalam proses scanning, tampilkan dialog
-      _showScanFailedDialog(context);
-    } on FormatException {
-      print("Scan dibatalkan oleh pengguna");
-      // Jika pengguna membatalkan scan, tampilkan dialog
-      _showScanFailedDialog(context);
-    } catch (e) {
-      print("Error: $e");
-      // Jika terjadi error dalam proses scanning, tampilkan dialog
-      _showScanFailedDialog(context);
+    } else {
+      print("Barcode manual: $manualBarcode");
+      setState(() {
+        scannedBarcode = manualBarcode;
+      });
     }
   }
 
@@ -81,6 +93,7 @@ class _ScanPageState extends State<ScanPage> {
   }
 
   Future<void> scanDataToApi(
+        String trNumber,
        int userId,
        int isFinished,
        double lat,
@@ -89,7 +102,7 @@ class _ScanPageState extends State<ScanPage> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('token', HttpHeaders.proxyAuthorizationHeader);
 
-    const String trNumber = "SHIP-2023728-00035";
+    // const String trNumber = "SHIP-2023728-00035";
     // final int userId = 24;
     // final int isFinished = 0;
     // final double lat = -6.2576241;
@@ -135,55 +148,6 @@ class _ScanPageState extends State<ScanPage> {
   }
 
 
-  // Future<void> sendScanDataToApi(
-  //     String trNumber, int userId, bool isFinished, double lat, double long, token) async {
-  //
-  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  //
-  //   prefs.setString('token', token);
-  //   _scanBarcode(context);
-  //
-  //   try {
-  //   // Menyimpan token menggunakan shared_preferences
-  //     prefs.setString('token', token);
-  //   final requestData = json.encode({
-  //     "tr_number": "SHIP-2023728-00023",
-  //     "user_id": userId,
-  //     "is_finished": isFinished,
-  //     "lat": lat,
-  //     "long": long,
-  //   });
-  //
-  //   final http.Response response = await http.post(
-  //     Uri.parse(ApiConstants.baseUrl + ApiConstants.scanAssignDriver),
-  //     headers: {
-  //       HttpHeaders.contentTypeHeader: 'application/json',
-  //       'Authorization':
-  //       'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoX3V1aWQiOiJkOGIzOTExMC1mZjI0LTRmNzEtYjUyMi0xYTY3MGJiMjQ3NzUiLCJhdXRob3JpemVkIjp0cnVlLCJleHAiOjk0NTc4Mzc0NzIsInVzZXJfaWQiOjF9.mIStyQpIUoHk4BvuwsWwND0VMdkoMWwThUd5bE3pZtQ',
-  //     },
-  //     body: requestData,
-  //   );
-  //
-  //   try {
-  //     if (kDebugMode) {
-  //       print(jsonDecode(response.body.toString()));
-  //     }
-  //
-  //     if (response.statusCode == 200) {
-  //       print("Data berhasil dikirim ke API dengan status code: ${response.statusCode}");
-  //     } else {
-  //       print("Gagal mengirim data ke API. Status code: ${response.statusCode}");
-  //       print('ResponseGagal body: ${response.body}');
-  //     }
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  // }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -196,16 +160,47 @@ class _ScanPageState extends State<ScanPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
+            Center(
+            child: TextField(
+              onChanged: (value) {
+                setState(() {
+                  manualBarcode = value;
+                });
+              },
+              decoration: const InputDecoration(
+                labelText: 'Barcode Manual',
+                hintText: 'Masukkan barcode secara manual',
+              ),
+            ),
+            ),
+            SizedBox(height: 20),
             Text(
-                "Hasil scan barcode akan muncul di sini",
+              scannedBarcode.isNotEmpty
+                  ? "Hasil scan barcode: $scannedBarcode"
+                  : "Hasil scan barcode akan muncul di sini",
               style: TextStyle(fontSize: 16),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed:  () {
-                scanDataToApi(  1, 1, 0.0, 0.0);
-                // sendScanDataToApi('tr_number', 1, true, 0.0, 0.0, 'token');
+                scanDataToApi(
+                  "SHIP-2023728-00035",
+                  24,
+                  0,
+                  -6.2576241,
+                  106.8380971,);
+                if (scanModel != null) {
+                  Navigator.pushReplacementNamed(context, '/transaction');
+                } else {
+                  Navigator.pushNamed(context, '/bottom-menu');
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Nomor Transaksi Salah"),
+                    backgroundColor: Colors.redAccent,
+                    duration: Duration(seconds: 3),
+                  ));
+                }
+
               },
               child: const Text("Scan Barcode"),
             ),

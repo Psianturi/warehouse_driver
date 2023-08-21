@@ -1,7 +1,4 @@
-
 import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:flutter/services.dart';
@@ -12,7 +9,7 @@ import 'package:jti_warehouse_driver/api/key.dart';
 import 'package:jti_warehouse_driver/ui/pages/models/scan_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
+import '../transaction/transaction_page.dart';
 
 class ScanPage extends StatefulWidget {
   const ScanPage({super.key});
@@ -22,7 +19,7 @@ class ScanPage extends StatefulWidget {
 }
 
 class _ScanPageState extends State<ScanPage> {
-  ScanResponseModel? scanModel;
+  ScanModel? scanModel;
   String scannedBarcode = '';
   String manualBarcode = '';
 
@@ -39,7 +36,6 @@ class _ScanPageState extends State<ScanPage> {
           print("Barcode: $barcode");
           // Setelah scan selesai, pindah ke halaman transaksi
           Navigator.pushReplacementNamed(context, '/transaction');
-
         } else {
           // Jika pengguna membatalkan scan, tampilkan dialog
           _showScanFailedDialog(context);
@@ -67,6 +63,30 @@ class _ScanPageState extends State<ScanPage> {
         scannedBarcode = manualBarcode;
       });
     }
+
+    // if (scannedBarcode.isNotEmpty) {
+    //   final response = await scanDataToApi(
+    //     "SHIP-2023728-00023",
+    //     24,
+    //     0,
+    //     -6.2576241,
+    //     106.8380971,
+    //     100,
+    //     "B 1234 ABC",
+    //   );
+    //
+    //   if (response != null) {
+    //     Navigator.pushReplacement(
+    //       context,
+    //       MaterialPageRoute(
+    //         builder: (context) => TransactionPage(),
+    //       ),
+    //     );
+    //   } else {
+    //     // Handle error
+    //   }
+    // }
+
   }
 
   // Fungsi untuk menampilkan dialog ketika scan gagal atau dibatalkan
@@ -82,7 +102,7 @@ class _ScanPageState extends State<ScanPage> {
               onPressed: () {
                 // Navigator.pop(context); // Tutup dialog
                 // Kembali ke halaman login
-                Navigator.pushNamed(context, '/home');
+                Navigator.pushNamed(context, '/bottom-menu');
               },
               child: const Text('OK'),
             ),
@@ -92,62 +112,85 @@ class _ScanPageState extends State<ScanPage> {
     );
   }
 
-  Future<void> scanDataToApi(
-        String trNumber,
-       int userId,
-       int isFinished,
-       double lat,
-       double long,
-      ) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('token', HttpHeaders.proxyAuthorizationHeader);
+  Future<ScanModel?> scanDataToApi(
+    String trNumber,
+    int userId,
+    // int isFinished,
+    double lat,
+    double long,
+    int battery,
+    String numberVehicle,
+  ) async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String bearerToken = prefs.getString('access_token') ??
+          ''; // Get the token value correctly
+      print('Bearer Token: $bearerToken');
 
-    // const String trNumber = "SHIP-2023728-00035";
-    // final int userId = 24;
-    // final int isFinished = 0;
-    // final double lat = -6.2576241;
-    // final double long = 106.8380971;
-    _scanBarcode(context);
-    final requestBody = json.encode(
-        {
-          "tr_number": trNumber,
-              "user_id": userId,
-              "is_finished": isFinished,
-              "lat": lat,
-              "long": long,
-        });
 
-    var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.scanAssignDriver);
+      // await _scanBarcode(context);
 
-    var headers = { 'Content-Type': 'application/json',
-      'Authorization':
-    'Bearer $bearerToken' };
+      final requestBody = json.encode({
+        "tr_number": trNumber,
+        "user_id": userId,
+        // "is_finished": isFinished,
+        "lat": lat,
+        "long": long,
+        "battery": battery,
+        "number_vehicle": numberVehicle
+      });
 
-    var response = await http.post(url, headers: headers, body: requestBody);
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-    print('Response jsonResponse: ${ScanResponseModel.fromJson(jsonDecode(response.body))}');
+      var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.scanAssignDriver);
 
-    if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Data Success"),
-        backgroundColor: Colors.lightBlueAccent,
-        duration: Duration(seconds: 2),
-      ));
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $bearerToken'
+      };
+
+      var response = await http.post(url, headers: headers, body: requestBody);
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      print(
+          'Response jsonResponse: ${ScanModel.fromJson(jsonDecode(response.body))}');
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
-        scanModel = ScanResponseModel.fromJson(jsonResponse);
-        Navigator.pushNamed(context, '/transaction');
-      } else {
-        print('Gagal mengirim data ke API.');
-        Navigator.pushNamed(context, '/home');
-      }
+        scanModel = ScanModel.fromJson(jsonResponse);
+        return scanModel;
 
+        // Navigator.pushNamed(context, '/transaction');
+      }
+        if(response.statusCode == 400) {
+          print('Data Tidak ada.');
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Data Tidak Ada"),
+            backgroundColor: Colors.redAccent,
+            duration: Duration(seconds: 3),
+          ));
+          // Navigator.pushNamed(context, '/bottom-menu');
+          return null;
+
+        // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        //   content: Text("Data Success"),
+        //   backgroundColor: Colors.lightBlueAccent,
+        //   duration: Duration(seconds: 3),
+        // ));
+
+        } else {
+          print('Gagal mengirim data ke API.');
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Data Failed"),
+            backgroundColor: Colors.redAccent,
+            duration: Duration(seconds: 3),
+          ));
+          // Navigator.pushNamed(context, '/bottom-menu');
+          return null;
+        }
+    } catch (e) {
+      print(e.toString());
+      return null;
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -161,17 +204,17 @@ class _ScanPageState extends State<ScanPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Center(
-            child: TextField(
-              onChanged: (value) {
-                setState(() {
-                  manualBarcode = value;
-                });
-              },
-              decoration: const InputDecoration(
-                labelText: 'Barcode Manual',
-                hintText: 'Masukkan barcode secara manual',
+              child: TextField(
+                onChanged: (value) {
+                  setState(() {
+                    manualBarcode = value;
+                  });
+                },
+                decoration: const InputDecoration(
+                  labelText: 'Barcode Manual',
+                  hintText: 'Masukkan barcode secara manual',
+                ),
               ),
-            ),
             ),
             SizedBox(height: 20),
             Text(
@@ -183,24 +226,48 @@ class _ScanPageState extends State<ScanPage> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed:  () {
-                scanDataToApi(
-                  "SHIP-2023728-00035",
-                  24,
-                  0,
-                  -6.2576241,
-                  106.8380971,);
-                if (scanModel != null) {
-                  Navigator.pushReplacementNamed(context, '/transaction');
-                } else {
-                  Navigator.pushNamed(context, '/bottom-menu');
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text("Nomor Transaksi Salah"),
-                    backgroundColor: Colors.redAccent,
-                    duration: Duration(seconds: 3),
-                  ));
-                }
+              onPressed: () async {
+                 _scanBarcode(context);
 
+                 if (scannedBarcode.isNotEmpty) {
+                   final response = await scanDataToApi(
+                     "SHIP-2023728-00023",
+                     24,
+                     // 1,
+                     -6.2576241,
+                     106.8380971,
+                     100,
+                     "B 1234 ABC",
+                   );
+
+                   if (response != null) {
+                     Navigator.pushReplacement(
+                       context,
+                       MaterialPageRoute(
+                         builder: (context) => TransactionPage(response: response),
+                       ),
+                     );
+                   } else {
+                     // Handle error
+                   }
+                 }
+
+
+
+                // if (scannedBarcode.isNotEmpty) {
+                //   scanDataToApi("SHIP-2023728-00023", 24, 0, -6.2576241,
+                //       106.8380971, 100, "B 1234 ABC");
+                //   if (scanModel != null) {
+                //     Navigator.pushReplacementNamed(context, '/transaction');
+                //   } else {
+                //     Navigator.pushNamed(context, '/bottom-menu');
+                //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                //       content: Text("Nomor Transaksi Salah"),
+                //       backgroundColor: Colors.redAccent,
+                //       duration: Duration(seconds: 3),
+                //     ));
+                //   }
+                // }
               },
               child: const Text("Scan Barcode"),
             ),

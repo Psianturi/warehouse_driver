@@ -5,6 +5,7 @@ import 'package:jti_warehouse_driver/api/constant.dart';
 import 'package:jti_warehouse_driver/api/key.dart';
 import 'package:jti_warehouse_driver/ui/pages/models/history_response.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 
 class HistoryPage extends StatefulWidget {
@@ -34,6 +35,9 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   Future<void> fetchHistoryData(userId) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String bearerToken = prefs.getString('access_token') ?? '';
+
     var url = Uri.parse(ApiConstants.baseUrl +
         ApiConstants.getTransactionHistory +
         userId.toString());
@@ -41,6 +45,8 @@ class _HistoryPageState extends State<HistoryPage> {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $bearerToken'
     });
+    print('Response status Token: $bearerToken');
+    print('Response userID: $userId');
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
@@ -98,7 +104,9 @@ class _HistoryPageState extends State<HistoryPage> {
           ),
         ),
       ),
-      body: ListView.builder(
+      body: AnimationLimiter(
+    child:
+      ListView.builder(
         itemCount: transaction.length,
         // itemCount: products.length,
 
@@ -120,48 +128,42 @@ class _HistoryPageState extends State<HistoryPage> {
           print('Transaction Data6: $receiveAt');
           print('Transaction Data8: $quantity');
 
-
-          return Card(
-            child: ListTile(
-              title: Text('Product: $productName'),
-              subtitle: Text('Transaction Number: $trNumber'),
-              trailing: Text('Status: $status'),
-              onTap: () {
-                // Add your action when a transaction is tapped
-              },
+          return AnimationConfiguration.staggeredList(
+            position: index,
+            duration: const Duration(milliseconds: 375),
+            child: SlideAnimation(
+              verticalOffset: 50.0,
+              child: FadeInAnimation(
+                child: Card(
+                  elevation: 2.0,
+                  child: ListTile(
+                    title: Text('Product: $productName'),
+                    subtitle: Text('Transaction Number: $trNumber'),
+                    trailing: Text('Status: $status'),
+                    onTap: () {
+                      // Add your action when a transaction is tapped
+                    },
+                  ),
+                ),
+              ),
             ),
           );
+
+
+          // return Card(
+          //   child: ListTile(
+          //     title: Text('Product: $productName'),
+          //     subtitle: Text('Transaction Number: $trNumber'),
+          //     trailing: Text('Status: $status'),
+          //     onTap: () {
+          //       // Add your action when a transaction is tapped
+          //     },
+          //   ),
+          // );
         },
       ),
+      ),
 
-
-      // body: Card(
-      //   child: Column(
-      //     mainAxisSize: MainAxisSize.min,
-      //     children: <Widget>[
-      //       const ListTile(
-      //         leading: Icon(Icons.album),
-      //         title: Text('Transaksi Driver'),
-      //         subtitle: Text('Music by Julie Gable. Lyrics by Sidney Stein.'),
-      //       ),
-      //       Row(
-      //         mainAxisAlignment: MainAxisAlignment.end,
-      //         children: <Widget>[
-      //           TextButton(
-      //             child: const Text('INFO'),
-      //             onPressed: () {/* ... */},
-      //           ),
-      //           const SizedBox(width: 8),
-      //           TextButton(
-      //             child: const Text('DETAIL'),
-      //             onPressed: () {/* ... */},
-      //           ),
-      //           const SizedBox(width: 8),
-      //         ],
-      //       ),
-      //     ],
-      //   ),
-      // )
     );
   }
 }

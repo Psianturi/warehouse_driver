@@ -18,10 +18,71 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-  var emailController = TextEditingController(text: "admin@gmail.com");
+  var emailController = TextEditingController(text: "posmcoba@gmail.com");
   TextEditingController passwordController = TextEditingController(text: "12345");
 
   late final String title;
+
+  // Future<void> login(String email, String password) async {
+  //   try {
+  //     final requestBody = json.encode({
+  //       'email': email,
+  //       'password': password,
+  //     });
+  //
+  //     final response = await post(
+  //       Uri.parse(ApiConstants.baseUrl + ApiConstants.loginEndPoint),
+  //       headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+  //       body: requestBody,
+  //     );
+  //
+  //
+  //     final int userId = json.decode(response.body)['data']['user']['id'];
+  //
+  //     if (response.statusCode == 200) {
+  //       final jsonResponse = json.decode(response.body);
+  //
+  //       // Extract and store the access token
+  //       final accessToken = jsonResponse['data']['access_token'];
+  //       SharedPreferences prefs = await SharedPreferences.getInstance();
+  //       prefs.setString('access_token', accessToken);
+  //
+  //       prefs.setInt('id',userId );
+  //
+  //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+  //         content: Text("Login Success"),
+  //         backgroundColor: Colors.lightBlueAccent,
+  //         duration: Duration(seconds: 1),
+  //       ));
+  //
+  //       if (prefs.containsKey('id')) {
+  //         print('****user_id nyahh*** : ${prefs.getInt('id')}');
+  //       } else {
+  //         print('uid: null');
+  //       }
+  //
+  //       Navigator.pushNamed(context, '/bottom-menu');
+  //     } else {
+  //       final jsonResponse = json.decode(response.body); // Define jsonResponse here
+  //       final errorMessage = jsonResponse['meta']['message'] ?? 'Login Failed';
+  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //         content: Text(errorMessage),
+  //         backgroundColor: Colors.redAccent,
+  //         duration: Duration(seconds: 3),
+  //       ));
+  //     }
+  //
+  //   } catch (e) {
+  //     // Handle exceptions, such as network errors
+  //     print('Error: $e');
+  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //       content: Text('An error occurred'),
+  //       backgroundColor: Colors.redAccent,
+  //       duration: Duration(seconds: 3),
+  //     ));
+  //   }
+  // }
+
 
   Future <void> login(
       String email,
@@ -44,6 +105,7 @@ class _LoginPageState extends State<LoginPage> {
 
         try {
           final int userId = json.decode(response.body)['data']['user']['id'];
+          final accessToken = json.decode(response.body)['data']['access_token'];
 
         if (response.statusCode == 200) {
           print('ResponseStatus Login: ${response.statusCode}');
@@ -52,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setInt('id',userId );
-
+          prefs.setString('access_token', accessToken);
 
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Login Success"),
@@ -173,12 +235,12 @@ class _LoginPageState extends State<LoginPage> {
                         passwordController.text.toString()
                     );
 
-                    // if (emailController.text.isEmpty ||
-                    //     passwordController.text.isEmpty) {
-                    //   print('email or password is empty');
-                    // } else {
-                    //   print('email or password is not empty');
-                    // }
+                    if (emailController.text.isEmpty ||
+                        passwordController.text.isEmpty) {
+                      print('email or password is empty');
+                    } else {
+                      print('email OK');
+                    }
 
                     // Navigator.push(context,
                         // MaterialPageRoute(builder:(context) => const HomePage() ) );
@@ -198,7 +260,7 @@ class _LoginPageState extends State<LoginPage> {
               Navigator.pushNamed(context, '/sign-up');
             },
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
         ],
@@ -207,3 +269,4 @@ class _LoginPageState extends State<LoginPage> {
 
   }
 }
+

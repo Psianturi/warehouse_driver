@@ -7,58 +7,140 @@ import 'package:jti_warehouse_driver/ui/pages/models/scan_model.dart';
 class TransactionPage extends StatelessWidget {
   final ScanModel? scanModel;
 
-  const TransactionPage({Key? key, required this.scanModel}) : super(key: key);
+  TransactionPage({Key? key, required this.scanModel}) : super(key: key);
+  bool autoValidate = true;
+  bool readOnly = false;
+  bool showSegmentedControl = true;
+  final _formKey = GlobalKey<FormBuilderState>();
+
 
   @override
   Widget build(BuildContext context) {
-    if (scanModel == null || scanModel!.meta == null) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text("Transaction Page"),
-        ),
-        body: const Center(
-          child: Text("No data available"),
-        ),
-      );
-    }
-
-    final Meta? meta = scanModel!.meta;
-
     return Scaffold(
       appBar: AppBar(
-        title: Text("Transaction Page"),
+        title: const Text('Halaman Transaksi'),
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+        backgroundColor: Colors.orangeAccent,
+        automaticallyImplyLeading: false,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(25),
+          ),
+        ),
       ),
-      body: ListView.builder(
-        itemCount: 1, // We only have 1 item (Meta data)
-        itemBuilder: (BuildContext context, int index) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ListTile(
-                title: Text(
-                  "Meta Data:",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              ),
-              ListTile(
-                title: Text("Code: ${meta!.code}"),
-              ),
-              ListTile(
-                title: Text("Status: ${meta.status}"),
-              ),
-              ListTile(
-                title: Text("Message: ${meta.message}"),
-              ),
-              ListTile(
-                title: Text("Is Paginated: ${meta.isPaginated}"),
-              ),
-            ],
-          );
+      body: FormBuilder(
+        key: _formKey,
+        onChanged: () {
+          _formKey.currentState?.save();
+          debugPrint(_formKey.currentState!.value.toString());
         },
+        autovalidateMode: AutovalidateMode.disabled,
+        skipDisabled: true,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(14),
+          child: Center(
+          child: Column(
+            children: <Widget>[
+              const SizedBox(height: 30),
+              // Add your existing form fields here
+
+              // Display Meta Data
+              if (scanModel != null && scanModel!.meta != null)
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[100],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Meta Data",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 6),
+                      Text("Code: ${scanModel!.meta!.code}"),
+                      SizedBox(height: 5),
+                      Text("Status: ${scanModel!.meta!.status}"),
+                      SizedBox(height: 5),
+                      Text("Message: ${scanModel!.meta!.message}"),
+
+                    ],
+                  ),
+                ),
+
+              const SizedBox(height: 24),
+
+              // Display Data
+              if (scanModel != null && scanModel!.data != null)
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.green[100],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Data",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      for (Data data in scanModel!.data!)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("ID: ${data.id}"),
+                            SizedBox(height: 5),
+                            Text("Tanggal: ${data.lastDate}"),
+                            // Add other data fields as needed
+                          ],
+                        ),
+                    ],
+                  ),
+                ),
+
+              const SizedBox(height: 50),
+
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/bottom-menu');
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.orangeAccent,
+                  shadowColor: Colors.greenAccent,
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                ),
+                child: const Text('Kembali ke Beranda'),
+              ),
+
+              const SizedBox(height: 20),
+            ],
+          ),
+          ),
+        ),
       ),
     );
   }
+
 }
+
+
 
 // class TransactionPage extends StatefulWidget {
 //   const TransactionPage({super.key, required response});
@@ -161,122 +243,4 @@ class TransactionPage extends StatelessWidget {
 //     );
 //   }
 // }
-
-
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: const Text('Halaman Transaksi'),
-//         titleTextStyle: const TextStyle(
-//           color: Colors.white,
-//           fontSize: 20,
-//           fontWeight: FontWeight.bold,
-//         ),
-//         backgroundColor: Colors.orangeAccent,
-//         automaticallyImplyLeading: false,
-//         shape: const RoundedRectangleBorder(
-//           borderRadius: BorderRadius.vertical(
-//             bottom: Radius.circular(25),
-//           ),
-//         ),
-//       ),
-//       body: FormBuilder(
-//           key: _formKey,
-//           onChanged: () {
-//             _formKey.currentState?.save();
-//             debugPrint(_formKey.currentState!.value.toString());
-//           },
-//           autovalidateMode: AutovalidateMode.disabled,
-//           skipDisabled: true,
-//           child: SingleChildScrollView(
-//             padding: const EdgeInsets.all(14),
-//             child: Column(
-//               children: <Widget>[
-//                 const SizedBox(height: 30),
-//                 FormBuilderTextField(
-//                   name: 'from',
-//                   textInputAction: TextInputAction.next,
-//                   //when enter is pressed, it will go to the next field
-//                   decoration:
-//                   const InputDecoration(labelText: 'Pengiriman Dari'),
-//                   initialValue: 'Quary JTI',
-//                   readOnly: true,
-//                   validator: FormBuilderValidators.compose([
-//                     FormBuilderValidators.required(),
-//                   ]),
-//                 ),
-//                 const SizedBox(height: 7),
-//                 FormBuilderTextField(
-//                   name: 'to',
-//                   textInputAction: TextInputAction.next,
-//                   //when enter is pressed, it will go to the next field
-//                   decoration:
-//                   const InputDecoration(labelText: 'Tujuan Pengiriman'),
-//                   initialValue: 'Warehouse Bojonegara',
-//                   readOnly: true,
-//                   validator: FormBuilderValidators.compose([
-//                     FormBuilderValidators.required(),
-//                   ]),
-//                 ),
-//                 const SizedBox(height: 7),
-//                 FormBuilderDateTimePicker(
-//                   name: 'date',
-//                   initialEntryMode: DatePickerEntryMode.calendar,
-//                   // initialValue: DateTime.now(),
-//                   initialValue: DateTime(2023, 8, 4),
-//                   enabled: false,
-//                   inputType: InputType.both,
-//                   decoration: const InputDecoration(
-//                     labelText: 'Waktu Transaksi',
-//
-//                   ),
-//                   initialTime: const TimeOfDay(hour: 8, minute: 0),
-//                   // locale: const Locale.fromSubtags(languageCode: 'fr'),
-//                 ),
-//                 const SizedBox(height: 7),
-//                 FormBuilderTextField(
-//                   name: 'produk',
-//                   textInputAction: TextInputAction.next,
-//                   //when enter is pressed, it will go to the next field
-//                   decoration:
-//                   const InputDecoration(labelText: 'Nama Produk'),
-//                   initialValue: 'Batu split 1/2',
-//                   readOnly: true,
-//                   validator: FormBuilderValidators.compose([
-//                     FormBuilderValidators.required(),
-//                   ]),
-//                 ),
-//                 const SizedBox(height: 40),
-//
-//                 ElevatedButton(onPressed:
-//                 () {
-//                   Navigator.pushNamed(context, '/bottom-menu',
-//                   );
-//
-//
-//                 },
-//                   style: ElevatedButton.styleFrom(
-//                     foregroundColor: Colors.orangeAccent,
-//                     shadowColor: Colors.greenAccent,
-//                     backgroundColor: Colors.white,
-//                     shape: RoundedRectangleBorder(
-//                       borderRadius: BorderRadius.circular(30.0),
-//                     ),
-//                   ),
-//                   child: const Text('Kembali ke Beranda'),
-//                 ),
-//
-//                 const SizedBox(height: 20),
-//
-//
-//               ],
-//             ),
-//           )),
-//
-//     );
-//   }
-// }
-
-
 

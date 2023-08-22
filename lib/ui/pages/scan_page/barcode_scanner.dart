@@ -31,8 +31,7 @@ class _ScanPageState extends State<ScanPage> {
           scannedBarcode = barcode;
         });
         print("BarcodeNYA: $scannedBarcode");
-        // Setelah scan selesai, pindah ke halaman transaksi
-        Navigator.pushReplacementNamed(context, '/transaction');
+
       } else {
         // Jika pengguna membatalkan scan, tampilkan dialog
         _showScanFailedDialog(context);
@@ -129,6 +128,7 @@ class _ScanPageState extends State<ScanPage> {
       if (response.statusCode == 200) {
         scanModel = ScanModel.fromJson(jsonResponse);
         print('Response status: ${response.statusCode}');
+        Navigator.pushReplacementNamed(context, '/transaction');
         return;
       } else if (response.statusCode == 400 &&
           jsonResponse['message'] == 'Pengiriman Sedang Berlangsung') {
@@ -136,6 +136,7 @@ class _ScanPageState extends State<ScanPage> {
       } else {
         // Handle other error cases
         _showErrorDialog();
+        return;
       }
     } catch (error) {
       _showErrorDialog();

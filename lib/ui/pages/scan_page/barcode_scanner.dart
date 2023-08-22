@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:jti_warehouse_driver/api/constant.dart';
 import 'package:jti_warehouse_driver/ui/pages/models/scan_model.dart';
+import 'package:jti_warehouse_driver/ui/pages/transaction/transaction_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ScanPage extends StatefulWidget {
@@ -97,20 +98,6 @@ class _ScanPageState extends State<ScanPage> {
         "battery": battery.toString(),
         "number_vehicle": numberVehicle,
       });
-      // print('User_Id: $userId');
-      // print('Lat' + lat.toString());
-      // print('Long' + long.toString());
-      // print('Battery' + battery.toString());
-      // print('Number_Vehicle' + numberVehicle.toString());
-
-      // final requestBody = json.encode({
-      //   "tr_number": "SHIP-2023731-00250",
-      //   "user_id": 16,
-      //   "lat": "-6.2576993",
-      //   "long": "106.838343",
-      //   "battery": "100",
-      //   "number_vehicle": "H 3115 AWG"
-      // });
 
       var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.scanAssignDriver);
 
@@ -128,8 +115,12 @@ class _ScanPageState extends State<ScanPage> {
       if (response.statusCode == 200) {
         scanModel = ScanModel.fromJson(jsonResponse);
         print('Response status: ${response.statusCode}');
-        Navigator.pushReplacementNamed(context, '/transaction');
-        return;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TransactionPage(scanModel: scanModel),
+          ));
+
       } else if (response.statusCode == 400 &&
           jsonResponse['message'] == 'Pengiriman Sedang Berlangsung') {
         _showOngoingDeliveryDialog();
@@ -248,6 +239,12 @@ class _ScanPageState extends State<ScanPage> {
                 //     backgroundColor: Colors.redAccent,
                 //     duration: Duration(seconds: 3),
                 //   ));
+                }
+                if (scanModel != null) {
+                  print("Meta Code: ${scanModel?.meta?.code}");
+                  print("Meta Status: ${scanModel?.meta?.status}");
+                  print("Meta Message: ${scanModel?.meta?.message}");
+                  print("Is Paginated: ${scanModel?.meta?.isPaginated}");
                 }
 
                 // if (scanModel != null) {

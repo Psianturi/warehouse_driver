@@ -1,12 +1,18 @@
 class ScanModel {
   Meta? meta;
+  List<Null>? pagination;
   List<Data>? data;
 
-  ScanModel({this.meta, this.data});
+  ScanModel({this.meta, this.pagination, this.data});
 
   ScanModel.fromJson(Map<String, dynamic> json) {
     meta = json['meta'] != null ? new Meta.fromJson(json['meta']) : null;
-
+    if (json['pagination'] != null) {
+      pagination = <Null>[];
+      json['pagination'].forEach((v) {
+        // pagination!.add( Null.fromJson(v);
+      });
+    }
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
@@ -20,7 +26,9 @@ class ScanModel {
     if (this.meta != null) {
       data['meta'] = this.meta!.toJson();
     }
-
+    if (this.pagination != null) {
+      // data['pagination'] = this.pagination!.map((v) => v.toJson()).toList();
+    }
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }

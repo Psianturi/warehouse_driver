@@ -75,7 +75,7 @@ class MyApp extends StatelessWidget {
           '/home': (context) => const HomePage(),
           '/bottom-menu': (context) => const BottomBarMenu(),
           '/barcode-scan': (context) =>  const ScanPage(),
-          '/transaction': (context) => const TransactionPage(),
+          '/transaction': (context) =>  const TransactionPage( response: null),
         });
   }
 }

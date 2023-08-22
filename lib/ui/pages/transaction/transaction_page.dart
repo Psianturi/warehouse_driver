@@ -45,7 +45,7 @@ class TransactionPage extends StatelessWidget {
           child: Center(
           child: Column(
             children: <Widget>[
-              const SizedBox(height: 30),
+              const SizedBox(height: 25),
               // Add your existing form fields here
 
               // Display Meta Data
@@ -58,23 +58,61 @@ class TransactionPage extends StatelessWidget {
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Meta Data",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                      children: <Widget>[
+          const SizedBox(height: 20),
+          FormBuilderTextField(
+            name: 'code',
+            textInputAction: TextInputAction.next,
+            decoration: const InputDecoration(labelText: 'No Code'),
+            initialValue: '${scanModel!.meta!.code}',
+            readOnly: true,
+            validator: FormBuilderValidators.compose([
+              FormBuilderValidators.required(),
+            ]),
+          ),
+          const SizedBox(height: 7),
+          FormBuilderTextField(
+            name: 'status',
+            textInputAction: TextInputAction.next,
+            decoration: const InputDecoration(labelText: 'Status'),
+            initialValue: '${scanModel!.meta!.status}',
+            readOnly: true,
+            validator: FormBuilderValidators.compose([
+              FormBuilderValidators.required(),
+            ]),
+          ),
+                        FormBuilderTextField(
+                          name: 'message',
+                          textInputAction: TextInputAction.next,
+                          decoration: const InputDecoration(labelText: 'Message'),
+                          initialValue: '${scanModel!.meta!.message}',
+                          readOnly: true,
+                          validator: FormBuilderValidators.compose([
+                            FormBuilderValidators.required(),
+                          ]),
                         ),
-                      ),
-                      SizedBox(height: 6),
-                      Text("Code: ${scanModel!.meta!.code}"),
-                      SizedBox(height: 5),
-                      Text("Status: ${scanModel!.meta!.status}"),
-                      SizedBox(height: 5),
-                      Text("Message: ${scanModel!.meta!.message}"),
 
-                    ],
+
+                    // children: [
+                    //   Text(
+                    //     "Meta Data",
+                    //     style: TextStyle(
+                    //       fontSize: 18,
+                    //       fontWeight: FontWeight.bold,
+                    //     ),
+                    //   ),
+                    //   SizedBox(height: 6),
+                    //   Text("Code: ${scanModel!.meta!.code}"),
+                    //   SizedBox(height: 5),
+                    //   Text("Status: ${scanModel!.meta!.status}"),
+                    //   SizedBox(height: 5),
+                    //   Text("Message: ${scanModel!.meta!.message}"),
+                    //
+                    // ],
+
+                  ],
                   ),
+
                 ),
 
               const SizedBox(height: 24),
@@ -102,10 +140,30 @@ class TransactionPage extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("ID: ${data.id}"),
-                            SizedBox(height: 5),
-                            Text("Tanggal: ${data.lastDate}"),
-                            // Add other data fields as needed
+                            // Text("ID: ${data.id}"),
+                            // SizedBox(height: 5),
+                            // Text("Tanggal: ${data.lastDate}"),
+                            FormBuilderTextField(
+                              name: 'idnya',
+                              textInputAction: TextInputAction.next,
+                              decoration: const InputDecoration(labelText: 'No ID'),
+                              initialValue: '${data.id}',
+                              readOnly: true,
+                              validator: FormBuilderValidators.compose([
+                                FormBuilderValidators.required(),
+                              ]),
+                            ),
+                            const SizedBox(height: 7),
+                            FormBuilderTextField(
+                              name: 'lastDate',
+                              textInputAction: TextInputAction.next,
+                              decoration: const InputDecoration(labelText: 'Tanggal'),
+                              initialValue: '${data.lastDate}',
+                              readOnly: true,
+                              validator: FormBuilderValidators.compose([
+                                FormBuilderValidators.required(),
+                              ]),
+                            ),
                           ],
                         ),
                     ],
@@ -126,7 +184,7 @@ class TransactionPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                 ),
-                child: const Text('Kembali ke Beranda'),
+                child: const Text('Ke Detail Transaksi'),
               ),
 
               const SizedBox(height: 20),
@@ -221,7 +279,7 @@ class TransactionPage extends StatelessWidget {
 //               FormBuilderValidators.required(),
 //             ]),
 //           ),
-//           // ... tambahkan input lainnya di sini ...
+
 //           const SizedBox(height: 40),
 //           ElevatedButton(
 //             onPressed: () {

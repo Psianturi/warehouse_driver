@@ -20,7 +20,7 @@ class _ScanPageState extends State<ScanPage> {
   ScanModel? scanModel;
   String scannedBarcode = '';
   TextEditingController manualBarcodeController =
-      TextEditingController(text: '');
+      TextEditingController(text: ''); //SHIP-2023731-00242
 
   Future<void> _scanBarcode(BuildContext context) async {
     try {

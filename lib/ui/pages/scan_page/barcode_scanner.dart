@@ -19,8 +19,8 @@ class ScanPage extends StatefulWidget {
 class _ScanPageState extends State<ScanPage> {
   ScanModel? scanModel;
   String scannedBarcode = '';
-  TextEditingController manualBarcodeController =
-      TextEditingController(text: ''); //SHIP-2023731-00242
+  TextEditingController manualBarcodeController = TextEditingController(text: ''); //SHIP-2023731-00245
+  TextEditingController platNomorController = TextEditingController(text: '');
 
   Future<void> _scanBarcode(BuildContext context) async {
     try {
@@ -121,13 +121,15 @@ class _ScanPageState extends State<ScanPage> {
             builder: (context) => TransactionPage(scanModel: scanModel),
           ));
 
-      } else if (response.statusCode == 400 &&
-          jsonResponse['message'] == 'Pengiriman Sedang Berlangsung') {
+      }
+      else if (response.statusCode == 400) {
         _showOngoingDeliveryDialog();
-      } else {
+
+      }
+      else {
         // Handle other error cases
         _showErrorDialog();
-        return;
+
       }
     } catch (error) {
       _showErrorDialog();
@@ -141,7 +143,7 @@ class _ScanPageState extends State<ScanPage> {
         return AlertDialog(
           title: Text('Pengiriman Sedang Berlangsung'),
           content: Text(
-              'Pengambilan data sedang dalam proses pengiriman. Silakan coba lagi nanti.'),
+              'Pengambilan data sedang dalam proses pengiriman. Silakan coba lagi nanti. Atau coba scan ulang.'),
           actions: [
             ElevatedButton(
               onPressed: () {
@@ -178,8 +180,7 @@ class _ScanPageState extends State<ScanPage> {
 
   @override
   void dispose() {
-    manualBarcodeController
-        .dispose(); // Hapus controller saat widget di-dispose
+    // manualBarcodeController.dispose();
     super.dispose();
   }
 
@@ -201,6 +202,13 @@ class _ScanPageState extends State<ScanPage> {
                 hintText: 'Masukkan barcode secara manual',
               ),
             ),
+            TextField(
+              controller: platNomorController,
+              decoration: const InputDecoration(
+                labelText: 'Input plat nomor Kendaraan',
+                hintText: 'Masukkan barcode secara manual',
+              ),
+            ),
             SizedBox(height: 20),
             Text(
               scannedBarcode.isNotEmpty
@@ -213,24 +221,12 @@ class _ScanPageState extends State<ScanPage> {
             ElevatedButton(
               onPressed: () async {
                 String manualBarcode = manualBarcodeController.text;
+                String platNomor = platNomorController.text;
 
-                // if(scannedBarcode.isNotEmpty){
-                //   scanDataToApi("", 24, -6.2576241, 106.8380971, 100, "B 1234 ABC");
-                //   if (scanModel != null) {
-                //     Navigator.pushReplacementNamed(context, '/transaction');
-                //   } else {
-                //     Navigator.pushNamed(context, '/barcode-scan');
-                //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                //       content: Text("Nomor Transaksi Salah"),
-                //       backgroundColor: Colors.redAccent,
-                //       duration: Duration(seconds: 3),
-                //     ));
-                //   }
-                // }
 
                 if (manualBarcode.isNotEmpty) {
                   scanDataToApi(manualBarcode, 24, -6.2576241, 106.8380971, 100,
-                      "B 1234 ABC");
+                      platNomor);
                    _scanBarcode(context);
                 // } else {
                 //   Navigator.pop(context);
